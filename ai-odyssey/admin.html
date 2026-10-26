@@ -3,11 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - CRISIS LAB | Debug the Arena</title>
+    <title>Admin Command Center - CRISIS LAB | Debug the Arena</title>
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/animations.css">
     <link rel="stylesheet" href="assets/css/cyberpunk.css">
     <link rel="stylesheet" href="assets/css/pages.css">
+    <style>
+        .admin-gate {
+            max-width: 440px;
+            margin: 4rem auto;
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+        }
+        .admin-gate-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-family: monospace;
+            font-size: 1rem;
+            outline: none;
+        }
+        .admin-gate-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+        .admin-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .admin-stat-card {
+            padding: 1.2rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            border: 1px solid var(--border-color);
+        }
+        .admin-stat-val {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent-primary);
+        }
+        .admin-stat-lbl {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .admin-tab-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .admin-tab-btn.active, .admin-tab-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        .admin-table th {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .sol-preview {
+            display: none;
+            padding: 0.5rem;
+            background: rgba(0, 240, 255, 0.08);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--accent-primary);
+            margin-top: 0.25rem;
+        }
+        .preset-btn {
+            padding: 0.4rem 0.8rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .preset-btn:hover {
+            background: rgba(0,240,255,0.15);
+            border-color: var(--accent-primary);
+            color: #fff;
+        }
+        .log-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
     <div class="cyber-bg">
@@ -21,20 +147,17 @@
             <div class="nav-brand">
                 <span class="brand-icon">⌘</span>
                 <span class="brand-text">CRISIS LAB</span>
-                <span class="brand-sub">DEBUG THE ARENA</span>
+                <span class="brand-sub">ADMIN COMMAND CENTER</span>
             </div>
             <div class="nav-links" id="navLinks">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="rules.html" class="nav-link">Rules</a>
-                <a href="login.html" class="nav-link">Login</a>
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="scoreboard.html" class="nav-link">Scoreboard</a>
                 <a href="admin.html" class="nav-link active">Admin</a>
             </div>
             <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="toggle-icon">🌙</span>
-                </button>
+                <div class="timer-display" id="timerDisplay">⏱ 90:00:00</div>
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -42,38 +165,679 @@
         </div>
     </nav>
 
-    <div class="admin-page">
-        <div class="admin-container">
-            <div class="admin-header">
-                <h1>⚙️ Admin Panel</h1>
-                <div class="timer-display" id="timerDisplay">⏱ 90:00</div>
+    <!-- ADMIN LOGIN GATE -->
+    <div id="adminLoginGate" class="admin-page">
+        <div class="admin-gate glass">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔐</div>
+            <h2 style="margin: 0 0 0.5rem; color: var(--accent-primary);">Admin Portal Access</h2>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+                Authorized competition administrators only.
+            </p>
+            <form id="adminAuthForm">
+                <input type="text" id="adminUser" class="admin-gate-input" placeholder="Admin Username" autocomplete="off" required>
+                <input type="password" id="adminPass" class="admin-gate-input" placeholder="Admin Password" required>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
+                    🚀 Access Command Center
+                </button>
+            </form>
+            <div id="adminAuthMsg" style="margin-top: 1rem; font-size: 0.85rem;"></div>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="adminMainContent" class="admin-page" style="display: none;">
+        <div class="admin-container" style="max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem;">
+            
+            <!-- HEADER BAR -->
+            <div class="admin-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem; color: var(--accent-primary);">⚡ Administrator Command Center</h1>
+                    <p style="margin: 0.25rem 0 0; color: var(--text-secondary);">Logged in as: <strong style="color:#fff;">ODYSSEY</strong> (Super Admin)</p>
+                </div>
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                    <span id="adminLiveRevBadge" class="badge" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--accent-primary); color: var(--accent-primary);">⚡ Server Rev #1</span>
+                    <button id="btnHeaderToggleAutoApproval" class="btn btn-outline btn-sm" style="font-weight: 800; border: 1px solid var(--accent-warning, #ff9500); color: var(--accent-warning, #ff9500); display: flex; align-items: center; gap: 0.35rem;">
+                        <span class="auto-approval-icon">⚡</span>
+                        <span class="auto-approval-text">Auto-Approval: OFF</span>
+                    </button>
+                    <button id="btnAdminActivateAllUsers" class="btn btn-primary btn-sm" style="font-weight: 800; background: linear-gradient(135deg, #00f0ff 0%, #7928ca 100%);">⚡ Activate All Users</button>
+                    <button id="btnOpenSheetsImportModal" class="btn btn-primary btn-sm">📋 Import from Sheets</button>
+                    <button id="btnQuickAddTeamModal" class="btn btn-secondary btn-sm">➕ Add Team</button>
+                    <button id="btnToggleFreezeLeaderboard" class="btn btn-secondary btn-sm">🧊 Freeze Scoreboard</button>
+                    <button id="btnDeleteAllTeams" class="btn btn-danger btn-sm" onclick="deleteAllTeams()">💣 Delete All Teams</button>
+                    <button id="themeToggle" class="btn btn-secondary btn-sm theme-toggle" title="Toggle Theme" aria-label="Toggle Light/Dark Theme" style="padding: 4px 10px; font-size: 1rem;">
+                        <span class="theme-icon">☀️</span>
+                    </button>
+                    <button id="adminLogoutBtn" class="btn btn-secondary btn-sm">🚪 Logout</button>
+                </div>
             </div>
 
-            <div class="admin-grid">
-                <div class="admin-card glass">
-                    <h3>⏱️ Timer Controls</h3>
-                    <div class="admin-actions">
-                        <button class="admin-btn success" onclick="document.dispatchEvent(new CustomEvent('timer:start'))">▶ Start Timer</button>
-                        <button class="admin-btn" onclick="document.dispatchEvent(new CustomEvent('timer:stop'))">⏸ Pause Timer</button>
-                        <button class="admin-btn danger" onclick="document.dispatchEvent(new CustomEvent('timer:reset'))">↺ Reset Timer</button>
+            <!-- ARENA TIMER QUICK COMMAND BAR -->
+            <div class="glass" style="margin-bottom: 1.5rem; padding: 1.25rem 1.75rem; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; border: 1px solid var(--accent-primary); background: linear-gradient(145deg, rgba(20, 26, 64, 0.8) 0%, rgba(10, 12, 30, 0.95) 100%); box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 25px rgba(0,240,255,0.2);">
+                <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.85rem;">
+                        <span style="font-size: 2.4rem;" class="pulse">⏱️</span>
+                        <div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">Global Competition Arena Clock (90m)</span>
+                            <div style="display: flex; align-items: center; gap: 0.85rem; margin-top: 0.15rem;">
+                                <div id="adminHeaderTimerDisplay" class="timer-display" style="font-family: var(--font-mono); font-size: 1.85rem; font-weight: 900; color: var(--accent-primary); letter-spacing: 1px; padding: 0.35rem 1.1rem; border-radius: 10px;">⏱ 90:00:00</div>
+                                <span id="adminTimerStatusBadge" class="badge badge-hard" style="font-size: 0.82rem; padding: 0.4rem 0.9rem;">🔴 STOPPED</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center;">
+                    <button id="btnHeaderStartTimer" class="btn btn-primary" style="font-weight: 800; padding: 0.7rem 1.4rem;">▶ Start Arena (90m)</button>
+                    <button id="btnHeaderUnpauseTimer" class="btn btn-primary" style="display: none; font-weight: 800; padding: 0.7rem 1.4rem; background: linear-gradient(135deg, #00f0ff 0%, #00ff88 100%); color: #000;">▶ Unpause Clock</button>
+                    <button id="btnHeaderPauseTimer" class="btn btn-secondary">⏸ Pause</button>
+                    <button id="btnHeaderAdd10Min" class="btn btn-secondary btn-sm">+10 Mins</button>
+                    <button id="btnHeaderAdd30Min" class="btn btn-secondary btn-sm">+30 Mins</button>
+                    <button id="btnHeaderResetTimer" class="btn btn-danger btn-sm">↺ Reset Clock</button>
+                </div>
+            </div>
+
+            <!-- LIVE STATS WIDGETS -->
+            <div class="admin-stat-grid">
+                <div class="admin-stat-card glass">
+                    <span class="admin-stat-val" id="statTotalTeamsCount">0</span>
+                    <span class="admin-stat-lbl">Registered Teams</span>
+                </div>
+                <div class="admin-stat-card glass">
+                    <span class="admin-stat-val" id="statApprovedTeamsCount" style="color:var(--accent-success);">0</span>
+                    <span class="admin-stat-lbl">Approved & Active</span>
+                </div>
+                <div class="admin-stat-card glass">
+                    <span class="admin-stat-val" id="statPendingTeamsCount" style="color:var(--accent-warning);">0</span>
+                    <span class="admin-stat-lbl">Pending Approvals</span>
+                </div>
+                <div class="admin-stat-card glass">
+                    <span class="admin-stat-val" id="statDQTeamsCount" style="color:var(--accent-danger);">0</span>
+                    <span class="admin-stat-lbl">Disqualified</span>
+                </div>
+                <div class="admin-stat-card glass">
+                    <span class="admin-stat-val" id="statArenaSolveCount">0</span>
+                    <span class="admin-stat-lbl">Total Solves</span>
+                </div>
+            </div>
+
+            <!-- NAVIGATION TABS -->
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-tab="tab-credentials">🔑 Credentials & Share Hub</button>
+                <button class="admin-tab-btn" data-tab="tab-scoreboard" style="border-color: #ffd700; color: #ffd700; font-weight: 800;">🏆 Live Arena Scoreboard</button>
+                <button class="admin-tab-btn" data-tab="tab-teams">👥 Teams Monitor & Approvals</button>
+                <button class="admin-tab-btn" data-tab="tab-timer-alerts">⏱️ Timer & Broadcasts</button>
+                <button class="admin-tab-btn" data-tab="tab-challenges">📋 Challenge Database (76)</button>
+                <button class="admin-tab-btn" data-tab="tab-audit">📜 Solves Audit Log</button>
+                <button class="admin-tab-btn" data-tab="tab-security" style="border-color: var(--accent-primary); color: var(--accent-primary); font-weight: 800;">🛡️ Security Shield & Telemetry</button>
+                <button class="admin-tab-btn" data-tab="tab-data">💾 Data Backup & Restore</button>
+            </div>
+
+            <!-- TAB 0: CREDENTIALS & SHARE HUB -->
+            <div id="tab-credentials" class="admin-tab-content">
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--accent-primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-primary); font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🔑</span> Team Credentials & 1-Click Share Hub
+                            </h3>
+                            <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-secondary);">
+                                Roster supporting all 70 teams and individual member logins. Only Super Admin can view/share credentials.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-primary btn-sm" onclick="copyAllAdminCredentials()">
+                                <span>📋 Copy All Credentials</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="exportAdminTeamsCSV()">
+                                <span>📥 Export CSV</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="window.print()">
+                                <span>🖨️ Print Cards</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and filters -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
+                        <input type="text" id="adminCredSearchInput" class="flag-input" placeholder="🔍 Search Team or Member (e.g. Arun, CyberKnights, Alice)..." style="flex: 1; max-width: 450px; font-size: 0.9rem; padding: 0.6rem 1rem;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Showing <span id="adminCredVisibleCount">0</span> / <span id="adminCredTotalCount">0</span> Teams</span>
+                    </div>
+
+                    <!-- Cards Grid -->
+                    <div id="adminCredentialsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem;">
+                        <!-- Rendered by admin.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: LIVE ARENA SCOREBOARD & USER LEADERBOARDS -->
+            <div id="tab-scoreboard" class="admin-tab-content" style="display: none;">
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 215, 0, 0.35); box-shadow: 0 0 25px rgba(255, 215, 0, 0.08);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="margin: 0; color: #ffd700; font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🏆</span> Master Competition Leaderboard & User Scoreboards
+                            </h3>
+                            <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-secondary);">
+                                Live real-time scores, team rankings, challenge difficulty breakdown, and full player scorecards.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                            <a href="scoreboard.html" target="_blank" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%); color: #0a0a1a; font-weight: 800;">
+                                <span>🌐 Public Scoreboard ↗</span>
+                            </a>
+                            <button class="btn btn-secondary btn-sm" onclick="exportAdminScoreboardCSV()">
+                                <span>📥 Export Leaderboard CSV</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btnScoreboardTabFreezeToggle" onclick="toggleFreezeScoreboard()">
+                                <span>🧊 Freeze Scoreboard</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TOP 3 PODIUM CARDS -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;" id="adminScoreboardPodium">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <!-- SEARCH & STATS CONTROLS -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                        <input type="text" id="adminScoreboardSearch" class="flag-input" placeholder="🔍 Search team or member in leaderboard..." style="flex: 1; max-width: 420px; font-size: 0.85rem; padding: 0.55rem 1rem;">
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <span class="presence-dot" style="background:#30d158; width:8px; height:8px; border-radius:50%; display:inline-block;"></span>
+                            <span style="font-size: 0.82rem; color: var(--accent-success); font-weight: 700;">LIVE UPDATING EVERY 2.5s</span>
+                            <button class="btn btn-secondary btn-sm" onclick="renderAdminScoreboard()" style="padding: 2px 8px; font-size: 0.75rem;">🔄 Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- MASTER SCOREBOARD TABLE -->
+                    <div style="overflow-x: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+                        <table class="admin-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: rgba(0,0,0,0.5);">
+                                    <th style="width: 65px; text-align: center;">Rank</th>
+                                    <th>Team Name</th>
+                                    <th>Registered Members</th>
+                                    <th style="text-align: center;">Total Solves</th>
+                                    <th style="text-align: center;">🟢 Easy</th>
+                                    <th style="text-align: center;">🟡 Medium</th>
+                                    <th style="text-align: center;">🔴 Hard</th>
+                                    <th style="text-align: center;">👑 Boss</th>
+                                    <th style="text-align: right;">Total Points</th>
+                                    <th style="text-align: center;">Last Solve</th>
+                                    <th style="text-align: right;">Inspect</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminScoreboardTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: TEAMS & APPROVALS -->
+            <div id="tab-teams" class="admin-tab-content" style="display: none;">
+                <!-- PENDING APPROVALS -->
+                <div class="glass" id="pendingApprovalsCard" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--accent-warning, #ff9500);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-warning, #ff9500); display: flex; align-items: center; gap: 0.5rem;">
+                                <span>⏳</span> Pending Registrations (<span id="pendingCount">0</span>)
+                            </h3>
+                            <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-secondary);">Review and approve new teams before they can enter the arena</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                            <button class="btn btn-outline btn-sm" id="btnToggleAutoApproval" style="font-weight: 700; border: 1px solid var(--accent-warning, #ff9500); color: var(--accent-warning, #ff9500); display: flex; align-items: center; gap: 0.35rem;">
+                                <span class="auto-approval-icon">⚡</span>
+                                <span class="auto-approval-text">Auto-Approval: OFF</span>
+                            </button>
+                            <button class="btn btn-primary btn-sm" id="btnApproveAllPending">✅ Approve All Pending</button>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Team Name</th>
+                                    <th>Members</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPendingTableBody">
+                                <!-- Rendered by admin.js -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <div class="admin-card glass">
-                    <h3>📊 Event Controls</h3>
-                    <div class="admin-actions">
-                        <button class="admin-btn" onclick="App.exportLeaderboard()">📥 Export Leaderboard</button>
-                        <button class="admin-btn danger" id="resetEvent">🗑️ Reset Event</button>
+                <!-- REGISTERED TEAMS -->
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-success);">👥 Registered Teams Monitor & Disqualification</h3>
+                            <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-secondary);">Manage team status, award manual bonus/penalty points, inspect progress, or disqualify rule violators</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                            <div class="challenge-filters" style="margin: 0;">
+                                <button class="filter-btn active" id="btnFilterTeamAll" style="padding: 4px 10px; font-size: 0.75rem;">All</button>
+                                <button class="filter-btn" id="btnFilterTeamApproved" style="padding: 4px 10px; font-size: 0.75rem;">🟢 Approved</button>
+                                <button class="filter-btn" id="btnFilterTeamPending" style="padding: 4px 10px; font-size: 0.75rem;">⏳ Pending</button>
+                                <button class="filter-btn" id="btnFilterTeamDQ" style="padding: 4px 10px; font-size: 0.75rem;">🔴 Disqualified</button>
+                            </div>
+                            <select id="adminTeamSortSelect" class="flag-input" style="padding: 4px 8px; font-size: 0.8rem; max-width: 150px; background: rgba(0,0,0,0.5); color: #fff;">
+                                <option value="points-desc">🏆 Points (High-Low)</option>
+                                <option value="points-asc">📉 Points (Low-High)</option>
+                                <option value="solves-desc">⚡ Solves (Most-Least)</option>
+                                <option value="name-asc">🔤 Name (A-Z)</option>
+                            </select>
+                            <input type="text" id="adminTeamSearch" class="flag-input" placeholder="🔍 Search team..." style="max-width: 170px; font-size: 0.8rem; padding: 4px 10px;">
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Team Name</th>
+                                    <th>Status</th>
+                                    <th>Members</th>
+                                    <th style="text-align: center;">Solved</th>
+                                    <th style="text-align: right;">Total Points</th>
+                                    <th style="text-align: center;">Last Solve</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTeamsTableBody">
+                                <!-- Rendered by admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- REMOVED TEAMS (ADMIN ONLY) -->
+                <div class="glass" id="removedTeamsCard" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--accent-danger, #ff3b30);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-danger, #ff3b30); display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🗑️</span> Removed Teams (<span id="removedCount">0</span>)
+                            </h3>
+                            <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-secondary);">Deleted teams hidden from all public pages. Super Admin can restore them or empty trash to permanently delete them.</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="btn btn-danger btn-sm" id="btnEmptyTrash" onclick="window.emptyTrash()" style="background: rgba(255,59,48,0.2); border: 1px solid #ff3b30; color: #ff453a; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.9rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;" title="Permanently delete all removed teams in trash">
+                                <span>🗑️</span> Empty Trash (Delete All Permanently)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Team Name</th>
+                                    <th>Members</th>
+                                    <th>Previous Score</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRemovedTableBody">
+                                <!-- Rendered by admin.js -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="admin-card glass">
-                <h3>📋 Challenge Management</h3>
-                <div class="admin-challenge-list" id="adminChallengeList">
-                    <!-- Rendered by JavaScript -->
+            <!-- TAB 2: TIMER & BROADCASTS -->
+            <div id="tab-timer-alerts" class="admin-tab-content" style="display: none;">
+                <div class="admin-section-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <!-- Timer Controls -->
+                    <div class="admin-card glass" style="padding: 1.5rem; border-radius: 12px;">
+                        <h3 style="margin-top: 0; color: var(--accent-primary);">⏱️ Global Arena Clock (90m)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            Synchronized competition countdown clock running across all participant screens.
+                        </p>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                            <button class="btn btn-primary btn-sm" id="btnAdminStartTimer">▶ Start Arena (90m)</button>
+                            <button class="btn btn-primary btn-sm" id="btnAdminUnpauseTimer" style="display: none; background: linear-gradient(135deg, #00f0ff 0%, #00ff88 100%); color: #000; font-weight: 800;">▶ Unpause Clock</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminPauseTimer">⏸ Pause Timer</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminAdd10Min">+10 Mins</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminAdd30Min">+30 Mins</button>
+                            <button class="btn btn-danger btn-sm" id="btnAdminResetTimer">↺ Reset (90m)</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Announcement Broadcast -->
+                    <div class="admin-card glass" style="padding: 1.5rem; border-radius: 12px;">
+                        <h3 style="margin-top: 0; color: var(--accent-warning);">📢 Broadcast Live Alert to Arena</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                            Send an immediate high-priority toast banner to every participant's screen in real-time.
+                        </p>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <input type="text" id="adminBroadcastInput" class="flag-input" placeholder="Type announcement..." style="font-size: 0.85rem;">
+                            <button class="btn btn-primary btn-sm" id="btnAdminSendBroadcast">📢 Send</button>
+                        </div>
+                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                            <button class="preset-btn" onclick="sendPreset('⚠️ 30 Minutes Remaining in the Arena! Push your fixes!')">⏱️ 30m Left</button>
+                            <button class="preset-btn" onclick="sendPreset('⚠️ 10 Minutes Remaining! Check your final submissions!')">⚡ 10m Left</button>
+                            <button class="preset-btn" onclick="sendPreset('🧊 The Scoreboard has been FROZEN for the final sprint!')">🧊 Scoreboard Frozen</button>
+                            <button class="preset-btn" onclick="sendPreset('🏁 Competition Concluded! Stop all submissions.')">🏁 Competition Ended</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- TAB 3: CHALLENGE DATABASE -->
+            <div id="tab-challenges" class="admin-tab-content" style="display: none;">
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-primary);">📋 Challenge Database (76 Challenges)</h3>
+                            <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-secondary);">Python, C, Java, HTML, CSS, JavaScript, Grand Boss — Instant Solution Vault & Point Editor</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-secondary btn-sm" id="btnAdminFilterAll">All (76)</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminFilterPython">🐍 Python</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminFilterC">⚡ C</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminFilterJava">☕ Java</button>
+                            <button class="btn btn-secondary btn-sm" id="btnAdminFilterWeb">🌐 Web</button>
+                            <input type="text" id="adminChallengeSearch" class="flag-input" placeholder="🔍 Search challenge..." style="max-width: 200px; font-size: 0.85rem;">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="adminChallengeList">
+                        <!-- Rendered by admin.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: SOLVE AUDIT LOG -->
+            <div id="tab-audit" class="admin-tab-content" style="display: none;">
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-primary);">📜 Live Submission & Solve Audit Log</h3>
+                            <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-secondary);">Real-time log of all solves, timestamps, and point allocations</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" id="btnRefreshAuditLog">🔄 Refresh Log</button>
+                    </div>
+
+                    <div id="adminAuditLogList" style="max-height: 480px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <!-- Rendered by admin.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: SECURITY SHIELD & TELEMETRY -->
+            <div id="tab-security" class="admin-tab-content" style="display: none;">
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--accent-primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--accent-primary); display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem;">
+                                <span>🛡️</span> Advanced Security Shield & Live Telemetry
+                            </h3>
+                            <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-secondary);">
+                                Real-time anti-cheat monitoring, sliding-window rate limiting, token-authenticated administration, and threat mitigation.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button id="btnRefreshSecurityLogs" class="btn btn-primary btn-sm">🔄 Refresh Telemetry</button>
+                            <button id="btnExportSecurityLogs" class="btn btn-secondary btn-sm">📥 Export Security Audit</button>
+                            <button id="btnClearSecurityLogs" class="btn btn-secondary btn-sm">🗑️ Clear Logs</button>
+                        </div>
+                    </div>
+
+                    <!-- Security Metrics Grid -->
+                    <div class="admin-stat-grid" style="margin-bottom: 1.5rem;">
+                        <div class="admin-stat-card glass" style="border-left: 4px solid var(--accent-primary);">
+                            <span class="admin-stat-val" id="secStatTotalEvents" style="color: var(--accent-primary);">0</span>
+                            <span class="admin-stat-lbl">Total Security Events</span>
+                        </div>
+                        <div class="admin-stat-card glass" style="border-left: 4px solid var(--accent-danger, #ff3b30);">
+                            <span class="admin-stat-val" id="secStatBlockedThreats" style="color: var(--accent-danger, #ff3b30);">0</span>
+                            <span class="admin-stat-lbl">Blocked Threats / Traversal</span>
+                        </div>
+                        <div class="admin-stat-card glass" style="border-left: 4px solid var(--accent-warning, #ff9500);">
+                            <span class="admin-stat-val" id="secStatThrottled" style="color: var(--accent-warning, #ff9500);">0</span>
+                            <span class="admin-stat-lbl">Rate Limit / Cooldown Hits</span>
+                        </div>
+                        <div class="admin-stat-card glass" style="border-left: 4px solid var(--accent-success, #30d158);">
+                            <span class="admin-stat-val" id="secStatActiveSessions" style="color: var(--accent-success, #30d158);">0</span>
+                            <span class="admin-stat-lbl">Active Connected Devices</span>
+                        </div>
+                    </div>
+
+                    <!-- Security Quick Actions & Mode Toggles -->
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                        <h4 style="margin: 0 0 1rem; color: #fff; display: flex; align-items: center; gap: 0.5rem; font-size: 1rem;">
+                            <span>⚙️</span> Real-Time Security Controls & Defense Matrix
+                        </h4>
+                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <button id="btnToggleArenaLockdown" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+                                    🚨 Arena Lockdown: <span id="lblLockdownStatus" style="color: #30d158;">OFF (Normal)</span>
+                                </button>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 0.85rem; color: var(--text-secondary);">Rate Limit Strictness:</span>
+                                <select id="selectRateLimitStrictness" class="flag-input" style="padding: 4px 10px; font-size: 0.85rem; background: rgba(0,0,0,0.6); color: #fff; max-width: 140px;">
+                                    <option value="relaxed">🟢 Relaxed (2x)</option>
+                                    <option value="normal" selected>🟡 Normal (Standard)</option>
+                                    <option value="strict">🔴 Strict (0.5x)</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <label style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                                    <input type="checkbox" id="chkAutoRefreshSecLogs" checked style="cursor: pointer;">
+                                    <span>Live Auto-Poll (3s)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Security Telemetry Log Table -->
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin: 0 0 0.75rem; color: var(--accent-primary); display: flex; align-items: center; justify-content: space-between;">
+                            <span>🛰️ Real-Time Security Audit Stream</span>
+                            <span id="secLogCountBadge" class="badge badge-easy" style="font-size: 0.75rem;">0 Logs</span>
+                        </h4>
+                        <div id="secAuditLogContainer" style="max-height: 380px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; font-family: var(--font-mono); font-size: 0.82rem; background: rgba(5,7,18,0.85);">
+                            <!-- Rendered dynamically by admin.js -->
+                        </div>
+                    </div>
+
+                    <!-- Active Connected Sessions & IPs -->
+                    <div>
+                        <h4 style="margin: 0 0 0.75rem; color: var(--accent-primary); display: flex; align-items: center; justify-content: space-between;">
+                            <span>📱 Active Connected Participant Sessions & IPs</span>
+                            <button id="btnRefreshActiveSessions" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 2px 8px;">Refresh Sessions</button>
+                        </h4>
+                        <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Participant</th>
+                                        <th>Team</th>
+                                        <th>Device IP</th>
+                                        <th>Session ID</th>
+                                        <th>Login Time</th>
+                                        <th>Status</th>
+                                        <th style="text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminActiveSessionsTableBody">
+                                    <!-- Rendered dynamically by admin.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 6: DATA BACKUP & RESTORE -->
+            <div id="tab-data" class="admin-tab-content" style="display: none;">
+                <div class="glass" style="padding: 1.5rem; border-radius: 12px;">
+                    <h3 style="margin-top: 0; color: var(--accent-primary);">💾 Competition Data Management & Migration</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Export full competition state snapshots, download CSV leaderboards, or restore from a JSON backup.
+                    </p>
+
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                        <button class="btn btn-primary" id="btnAdminDownloadBackupJSON">📦 Download Full State (JSON)</button>
+                        <button class="btn btn-secondary" id="btnAdminExportCSV">📥 Export Leaderboard (CSV)</button>
+                        <label class="btn btn-secondary" style="cursor: pointer;">
+                            📤 Restore from Backup (JSON)
+                            <input type="file" id="adminRestoreFileInput" accept=".json" style="display: none;">
+                        </label>
+                    </div>
+
+                    <div style="border-top: 1px solid rgba(255, 59, 48, 0.2); padding-top: 1.5rem;">
+                        <h4 style="color: var(--accent-danger); margin: 0 0 0.5rem;">🚨 Danger Zone</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            Irreversibly wipes all teams, submissions, timer records, and point allocations.
+                        </p>
+                        <button class="btn btn-danger btn-sm" id="btnAdminResetAllEvent">🗑️ Wipe Entire Competition State</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- QUICK ADD TEAM MODAL -->
+    <div id="quickAddTeamModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10,10,26,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="glass" style="max-width: 460px; width: 100%; padding: 2rem; border-radius: 16px; border: 1px solid var(--accent-primary); box-shadow: 0 0 30px rgba(0,240,255,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <h3 style="margin: 0; color: var(--accent-primary);">➕ Quick Register Team</h3>
+                <button onclick="document.getElementById('quickAddTeamModal').style.display='none'" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+            <form id="quickAddTeamForm">
+                <input type="text" id="quickTeamName" class="admin-gate-input" placeholder="Team Name (e.g. CyberKnights)" required>
+                <input type="password" id="quickPassword" class="admin-gate-input" placeholder="Team Password" required>
+                <input type="text" id="quickMember1" class="admin-gate-input" placeholder="Member 1 (Primary)" required>
+                <input type="text" id="quickMember2" class="admin-gate-input" placeholder="Member 2 (Optional)">
+                <input type="text" id="quickMember3" class="admin-gate-input" placeholder="Member 3 (Optional)">
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">🚀 Add & Approve Team</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('quickAddTeamModal').style.display='none'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- IMPORT FROM SHEETS / EXCEL MODAL -->
+    <div id="importSheetsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10,10,26,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="glass" style="max-width: 600px; width: 100%; padding: 2rem; border-radius: 16px; border: 1px solid var(--accent-primary); box-shadow: 0 0 30px rgba(0,240,255,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <h3 style="margin: 0; color: var(--accent-primary);">📋 Import Teams from Google Sheets / Excel</h3>
+                <button onclick="document.getElementById('importSheetsModal').style.display='none'" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Copy columns from Google Sheets or Excel and paste below (CSV or Tab-Separated format):<br>
+                <code style="color: var(--accent-primary);">TeamName, Password, Member1, Member2, Member3</code>
+            </p>
+            <textarea id="sheetsImportTextarea" class="admin-gate-input" rows="8" placeholder="CyberKnights, cyber123, Arun, Bhavya, Chetan&#10;CodeCrushers, crush99, Divya, Eswar, Farhan&#10;BugHunters, hunt123, Gowtham, Harini" style="width: 100%; font-family: monospace; resize: vertical;"></textarea>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button id="btnExecuteSheetsImport" class="btn btn-primary" style="flex: 1;">🚀 Import & Approve All Teams</button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('importSheetsModal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEAM PROGRESS INSPECTION MODAL -->
+    <div id="inspectTeamModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10,10,26,0.92); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(8px);">
+        <div class="glass" style="max-width: 840px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; padding: 1.75rem; border-radius: 16px; border: 1px solid var(--accent-primary); box-shadow: 0 0 40px rgba(0,240,255,0.25); background: linear-gradient(165deg, rgba(16, 20, 36, 0.96), rgba(8, 10, 20, 0.98));">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; gap: 1rem;">
+                <div>
+                    <h3 id="inspectModalTeamTitle" style="margin: 0; color: var(--accent-primary); font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">🔍 Team Details & Scorecard</h3>
+                    <p id="inspectModalTeamSub" style="margin: 0.25rem 0 0; font-size: 0.82rem; color: var(--text-secondary);"></p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button id="btnInspectModalRefresh" class="btn btn-secondary btn-sm" style="padding: 3px 9px; font-size: 0.75rem;" title="Refresh live scorecard">🔄 Refresh</button>
+                    <button onclick="document.getElementById('inspectTeamModal').style.display='none'" style="background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 4px 8px;" title="Close">✕</button>
+                </div>
+            </div>
+            <div id="inspectModalBody" style="overflow-y: auto; flex: 1; margin-bottom: 1rem; padding-right: 0.25rem;">
+                <!-- Solved challenges list rendered by JS -->
+            </div>
+            <div style="text-align: right; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.75rem;">
+                <button class="btn btn-secondary" onclick="document.getElementById('inspectTeamModal').style.display='none'">Close Scorecard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT TEAM DETAILS & MEMBERS MODAL -->
+    <div id="editTeamModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10,10,26,0.92); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="glass" style="max-width: 520px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; padding: 2rem; border-radius: 16px; border: 1px solid var(--accent-primary); box-shadow: 0 0 35px rgba(0,240,255,0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem;">
+                <div>
+                    <h3 style="margin: 0; color: var(--accent-primary); font-size: 1.25rem;">✏️ Edit Team Credentials & Members</h3>
+                    <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--text-secondary);">Change passwords and add unlimited extra team members</p>
+                </div>
+                <button onclick="document.getElementById('editTeamModal').style.display='none'" style="background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer;">✕</button>
+            </div>
+            <form id="editTeamForm" style="overflow-y: auto; flex: 1; padding-right: 0.3rem;">
+                <input type="hidden" id="editOriginalTeamName">
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem; font-weight: 600;">Team Name:</label>
+                    <input type="text" id="editTeamName" class="admin-gate-input" required placeholder="Team Name">
+                </div>
+
+                <div style="margin-bottom: 1.2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Team Login Password:</label>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="generateRandomTeamPassword()" style="font-size: 0.72rem; padding: 2px 8px;">🎲 Generate New</button>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="editPassword" class="admin-gate-input" required placeholder="Password" style="font-family: monospace; font-weight: 700; color: var(--accent-warning); letter-spacing: 0.5px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="copyEditPassword()" title="Copy Password">📋 Copy</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                        <label style="font-size: 0.82rem; color: var(--accent-primary); font-weight: 700;">👥 Team Members & Extra Members:</label>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Any member name can log in</span>
+                    </div>
+
+                    <div id="editMembersContainer" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <!-- Dynamic member input rows rendered by JS -->
+                    </div>
+
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnAddExtraMember" onclick="addExtraMemberInput()" style="width: 100%; border-style: dashed; border-color: rgba(0, 240, 255, 0.4); color: var(--accent-primary); font-weight: 600;">
+                        ➕ Add Extra Team Member
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; margin-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">💾 Save & Sync Credentials</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('editTeamModal').style.display='none'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADJUST SCORE MODAL -->
+    <div id="adjustScoreModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10,10,26,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="glass" style="max-width: 420px; width: 100%; padding: 2rem; border-radius: 16px; border: 1px solid var(--accent-warning); box-shadow: 0 0 30px rgba(255,149,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <h3 style="margin: 0; color: var(--accent-warning);">⚡ Adjust Team Score</h3>
+                <button onclick="document.getElementById('adjustScoreModal').style.display='none'" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+            <form id="adjustScoreForm">
+                <input type="hidden" id="scoreTargetTeam">
+                <p id="scoreTargetTeamLabel" style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 1rem;"></p>
+                <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Point Adjustment (+/- Delta):</label>
+                <input type="number" id="scorePointsDelta" class="admin-gate-input" placeholder="e.g. +50 or -25" required>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Update Scoreboard</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('adjustScoreModal').style.display='none'">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -81,9 +845,9 @@
     <script src="assets/js/particles.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
     <script src="assets/js/timer.js"></script>
     <script src="assets/js/challenges.js"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/admin.js"></script>
 </body>
 </html>
-

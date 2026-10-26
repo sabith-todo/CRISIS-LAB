@@ -1,1 +1,1 @@
-AIODYSSEY{footer_fixed}
+def create_user_session(username: str, permissions=None):

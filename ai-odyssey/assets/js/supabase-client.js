@@ -28,17 +28,21 @@ const SupabaseClient = {
     async login(username, password) {
         if (!this.ready) return { success: false, error: 'Supabase not configured.' };
 
-        const { data, error } = await this.client
-            .from(DB_TABLES.users)
-            .select('username, password, team_name, role')
-            .eq('username', username)
-            .maybeSingle();
+        try {
+            const { data, error } = await this.client
+                .from(DB_TABLES.users)
+                .select('username, password, team_name, role')
+                .eq('username', username)
+                .maybeSingle();
 
-        if (error) return { success: false, error: error.message };
-        if (!data) return { success: false, error: 'Invalid username or password.' };
-        if (data.password !== password) return { success: false, error: 'Invalid username or password.' };
+            if (error) return { success: false, error: error.message };
+            if (!data) return { success: false, error: 'Invalid username or password.' };
+            if (data.password !== password) return { success: false, error: 'Invalid username or password.' };
 
-        return { success: true, user: data };
+            return { success: true, user: data };
+        } catch (err) {
+            return { success: false, error: err.message || 'Login failed.' };
+        }
     },
 
     /* ============================================
@@ -47,23 +51,27 @@ const SupabaseClient = {
     async register(username, password, teamName) {
         if (!this.ready) return { success: false, error: 'Supabase not configured.' };
 
-        // 1. Create the player
-        const { data: player, error: playerError } = await this.client
-            .from(DB_TABLES.users)
-            .insert({ username, password, team_name: teamName, role: 'player' })
-            .select()
-            .single();
+        try {
+            // 1. Create the player
+            const { data: player, error: playerError } = await this.client
+                .from(DB_TABLES.users)
+                .insert({ username, password, team_name: teamName, role: 'player' })
+                .select()
+                .single();
 
-        if (playerError) return { success: false, error: playerError.message };
+            if (playerError) return { success: false, error: playerError.message };
 
-        // 2. Create a score row for the team (or update if exists)
-        const { error: scoreError } = await this.client
-            .from(DB_TABLES.scores)
-            .upsert({ team_name: teamName, total_points: 0, solved_count: 0, easy: 0, medium: 0, hard: 0 });
+            // 2. Create a score row for the team (or update if exists)
+            const { error: scoreError } = await this.client
+                .from(DB_TABLES.scores)
+                .upsert({ team_name: teamName, total_points: 0, solved_count: 0, easy: 0, medium: 0, hard: 0 });
 
-        if (scoreError) return { success: false, error: scoreError.message };
+            if (scoreError) return { success: false, error: scoreError.message };
 
-        return { success: true, user: player };
+            return { success: true, user: player };
+        } catch (err) {
+            return { success: false, error: err.message || 'Registration failed.' };
+        }
     },
 
     /* ============================================
@@ -72,23 +80,27 @@ const SupabaseClient = {
     async updateScore(teamName, scoreData) {
         if (!this.ready) return { success: false, error: 'Supabase not configured.' };
 
-        const { data, error } = await this.client
-            .from(DB_TABLES.scores)
-            .upsert({
-                team_name: teamName,
-                total_points: scoreData.total_points,
-                solved_count: scoreData.solved_count,
-                easy: scoreData.easy,
-                medium: scoreData.medium,
-                hard: scoreData.hard,
-                last_solve: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }, {
-                onConflict: 'team_name'
-            });
+        try {
+            const { data, error } = await this.client
+                .from(DB_TABLES.scores)
+                .upsert({
+                    team_name: teamName,
+                    total_points: scoreData.total_points || 0,
+                    solved_count: scoreData.solved_count || 0,
+                    easy: scoreData.easy || 0,
+                    medium: scoreData.medium || 0,
+                    hard: scoreData.hard || 0,
+                    last_solve: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'team_name'
+                });
 
-        if (error) return { success: false, error: error.message };
-        return { success: true, data };
+            if (error) return { success: false, error: error.message };
+            return { success: true, data };
+        } catch (err) {
+            return { success: false, error: err.message || 'Failed to update score.' };
+        }
     },
 
     /* ============================================
@@ -97,17 +109,22 @@ const SupabaseClient = {
     async loadScoreboard() {
         if (!this.ready) return { success: false, error: 'Supabase not configured.', data: [] };
 
-        const { data, error } = await this.client
-            .from(DB_TABLES.scores)
-            .select('team_name, total_points, solved_count, easy, medium, hard, last_solve')
-            .order('total_points', { ascending: false })
-            .order('last_solve', { ascending: true });
+        try {
+            const { data, error } = await this.client
+                .from(DB_TABLES.scores)
+                .select('team_name, total_points, solved_count, easy, medium, hard, last_solve')
+                .order('total_points', { ascending: false })
+                .order('last_solve', { ascending: true });
 
-        if (error) return { success: false, error: error.message, data: [] };
+            if (error) return { success: false, error: error.message, data: [] };
+            if (!data) return { success: true, data: [] };
 
-        // Assign ranks
-        const ranked = data.map((team, index) => ({ ...team, rank: index + 1 }));
-        return { success: true, data: ranked };
+            // Assign ranks
+            const ranked = data.map((team, index) => ({ ...team, rank: index + 1 }));
+            return { success: true, data: ranked };
+        } catch (err) {
+            return { success: false, error: err.message || 'Failed to load scoreboard.', data: [] };
+        }
     },
 
     /* ============================================
@@ -115,17 +132,24 @@ const SupabaseClient = {
        Re-renders the table whenever any score changes.
        ============================================ */
     subscribeScoreboard(onChange) {
-        if (!this.ready) return;
+        if (!this.ready) return null;
 
-        const channel = this.client
-            .channel('scoreboard-changes')
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: DB_TABLES.scores },
-                () => onChange()
-            )
-            .subscribe();
-        return channel;
+        try {
+            const channel = this.client
+                .channel('scoreboard-changes')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: DB_TABLES.scores },
+                    () => {
+                        if (typeof onChange === 'function') onChange();
+                    }
+                )
+                .subscribe();
+            return channel;
+        } catch (err) {
+            console.error('Subscription error:', err);
+            return null;
+        }
     }
 };
 

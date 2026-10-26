@@ -1,1 +1,1 @@
-AIODYSSEY{quiz_fixed}
+public static <T> T deserializePayload(String json, Class<T> clazz)

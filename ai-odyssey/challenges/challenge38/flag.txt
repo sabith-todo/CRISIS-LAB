@@ -1,1 +1,1 @@
-AIODYSSEY{dashboard_fixed}
+return records.parallelStream().filter(Record::isActive).map(Record::getId).collect(Collectors.toList());

@@ -1,1 +1,1 @@
-AIODYSSEY{animation_fixed}
+CompletableFuture.allOf(task1, task2).join();

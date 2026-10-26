@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Share & Credentials Hub - CRISIS LAB</title>
+    <meta name="description" content="CRISIS LAB Team Directory & Credentials Portal for 40 participants across 20 teams. Search, 1-click share links, and instant arena access.">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    <link rel="stylesheet" href="assets/css/pages.css">
+    <!-- STRICT ADMIN AUTHENTICATION GATE -->
+    <script>
+        (function() {
+            var isAuth = sessionStorage.getItem('ai-odyssey-admin-auth') === 'true';
+            var raw = localStorage.getItem('ai-odyssey-current-user');
+            var isAdmin = false;
+            if (raw) {
+                try {
+                    var u = JSON.parse(raw);
+                    if (u && u.role === 'admin' && u.username.toUpperCase() === 'ODYSSEY') isAdmin = true;
+                } catch(e) {}
+            }
+            if (!isAuth && !isAdmin) {
+                window.location.replace('admin.html');
+            }
+        })();
+    </script>
+    <style>
+        .teams-page {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+        .teams-hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+        .teams-hero h1 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            margin: 0.5rem 0;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 60%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .teams-hero p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 680px;
+            margin: 0 auto 1.5rem;
+        }
+        .teams-stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .teams-stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+        }
+        .teams-controls-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+        }
+        .teams-search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+            max-width: 450px;
+        }
+        .teams-search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.6rem;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .teams-search-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+        }
+        .teams-search-icon {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+        }
+        .team-card {
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.2rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 240, 255, 0.18);
+        }
+        .team-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.15);
+        }
+        .team-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .team-num-badge {
+            font-family: var(--font-mono, monospace);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(0, 240, 255, 0.12);
+            color: var(--accent-primary);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+        .team-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0.25rem 0 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .password-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .password-val {
+            font-family: var(--font-mono, monospace);
+            font-size: 0.9rem;
+            color: var(--accent-warning);
+            letter-spacing: 0.5px;
+            user-select: all;
+        }
+        .members-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .member-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            gap: 0.5rem;
+        }
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .member-actions {
+            display: flex;
+            gap: 0.35rem;
+            align-items: center;
+        }
+        .btn-mini {
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.15s ease;
+        }
+        .card-footer-actions {
+            display: flex;
+            gap: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding-top: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            .teams-grid {
+                grid-template-columns: 1fr;
+            }
+            .teams-controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+        @media print {
+            .navbar, .particles, .teams-controls-bar, .card-footer-actions, .member-actions, .footer {
+                display: none !important;
+            }
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .team-card {
+                break-inside: avoid;
+                border: 1px solid #ccc !important;
+                background: #f9f9f9 !important;
+                color: #000 !important;
+                box-shadow: none !important;
+            }
+            .password-val, .team-title, .member-info {
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-bg">
+        <div class="grid-overlay"></div>
+        <div class="scan-line"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <nav class="navbar glass" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⌘</span>
+                <span class="brand-text">CRISIS LAB</span>
+                <span class="brand-sub">DEBUG THE ARENA</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="teams.html" class="nav-link active">Teams</a>
+                <a href="rules.html" class="nav-link">Rules</a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="scoreboard.html" class="nav-link">Scoreboard</a>
+                <a href="admin.html" class="nav-link">Admin</a>
+            </div>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
+                </button>
+                <div class="timer-display" id="timerDisplay">⏱ 90:00:00</div>
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="teams-page">
+        <!-- Hero Section -->
+        <div class="teams-hero">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.2rem; border-radius: 30px; background: rgba(0, 240, 255, 0.08); border: 1px solid var(--accent-primary); color: var(--accent-primary); font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem;">
+                <span>👥</span> ARENA COMPETITION ROSTER
+            </div>
+            <h1>Team Credentials & Share Directory</h1>
+            <p>
+                Browse all teams, copy direct 1-click auto-login links, or enter the arena with a single click.
+            </p>
+
+            <div class="teams-stats-row">
+                <div class="teams-stat-pill">
+                    <span>🏆</span>
+                    <span id="statPillTeams">0 Teams</span>
+                </div>
+                <div class="teams-stat-pill" style="border-color: var(--accent-primary); color: var(--accent-primary);">
+                    <span>👤</span>
+                    <span id="statPillParticipants">0 Participants</span>
+                </div>
+                <div class="teams-stat-pill" style="border-color: var(--accent-success); color: var(--accent-success);">
+                    <span>🟢</span>
+                    <span>Auto-Approved & Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar & Search -->
+        <div class="teams-controls-bar glass">
+            <div class="teams-search-wrap">
+                <span class="teams-search-icon">🔍</span>
+                <input type="text" id="teamSearchInput" class="teams-search-input" placeholder="Search Team Name or Member (e.g. Arun, CyberKnights, Alice)..." autocomplete="off">
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm" id="btnCopyAllRoster" onclick="copyAllRosterToClipboard()">
+                    <span>📋 Copy All Credentials</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btnExportCSV" onclick="exportTeamsCSV()">
+                    <span>📥 Export CSV</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btnPrintSheet" onclick="window.print()">
+                    <span>🖨️ Print Cards</span>
+                </button>
+                <a href="login.html" class="btn btn-secondary btn-sm">
+                    <span>🔑 Go to Login</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Team Cards Grid -->
+        <div class="teams-grid" id="teamsGrid">
+            <!-- Rendered by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Share Modal -->
+    <div id="shareModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(10,10,26,0.9); z-index:99999; align-items:center; justify-content:center; padding:1.5rem; backdrop-filter:blur(8px);">
+        <div class="glass" style="max-width:520px; width:100%; padding:2rem; border-radius:16px; border:1px solid var(--accent-primary); box-shadow:0 0 35px rgba(0,240,255,0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+                <h3 id="shareModalTitle" style="margin:0; color:var(--accent-primary); font-size:1.25rem;">🔗 Share Team Access</h3>
+                <button onclick="closeShareModal()" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+            <div id="shareModalBody">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="brand-icon">⌘</span>
+                <span>CRISIS LAB</span>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="teams.html">Teams</a>
+                <a href="rules.html">Rules</a>
+                <a href="login.html">Login</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="scoreboard.html">Scoreboard</a>
+                <a href="admin.html">Admin</a>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2026 Crisis Laboratory Debug Arena. Competition Teams Roster.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/particles.js"></script>
+    <script src="assets/js/navigation.js"></script>
+    <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
+    <script src="assets/js/login-supabase.js"></script>
+    <script>
+        // Roster Rendering & Interactive Share Script
+        let cachedActiveTeams = [];
+        let teamsRevision = 0;
+
+        async function fetchAuthoritativeTeams(isForced = false) {
+            try {
+                const revRes = await fetch('api/revision', { cache: 'no-store' });
+                if (revRes.ok) {
+                    const revData = await revRes.json();
+                    const serverRev = revData.revision || 1;
+                    if (!isForced && serverRev === teamsRevision && cachedActiveTeams.length > 0) {
+                        return cachedActiveTeams;
+                    }
+                    teamsRevision = serverRev;
+                }
+
+                const res = await fetch('api/teams', { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.teams)) {
+                        cachedActiveTeams = data.teams.map(t => ({
+                            team: t.team,
+                            password: t.password || '',
+                            members: t.members || [t.team],
+                            status: t.status || 'active'
+                        }));
+                        return cachedActiveTeams;
+                    }
+                }
+            } catch(e) {}
+            return cachedActiveTeams;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchAuthoritativeTeams(true);
+            renderTeamCards();
+
+            const searchInput = document.getElementById('teamSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    renderTeamCards(e.target.value.trim().toLowerCase());
+                });
+            }
+
+            // Auto-refresh active teams list from central server every 2.5s
+            setInterval(async () => {
+                const query = (document.getElementById('teamSearchInput')?.value || '').trim().toLowerCase();
+                const prevRev = teamsRevision;
+                await fetchAuthoritativeTeams(false);
+                if (teamsRevision !== prevRev || query) {
+                    renderTeamCards(query);
+                }
+            }, 2500);
+
+            window.addEventListener('online', async () => {
+                await fetchAuthoritativeTeams(true);
+                renderTeamCards();
+            });
+
+            document.addEventListener('visibilitychange', async () => {
+                if (!document.hidden) {
+                    await fetchAuthoritativeTeams(true);
+                    renderTeamCards();
+                }
+            });
+        });
+
+        function getBaseUrl() {
+            return window.location.origin + window.location.pathname.replace('teams.html', 'login.html');
+        }
+
+        function renderTeamCards(searchFilter = '') {
+            const container = document.getElementById('teamsGrid');
+            if (!container) return;
+
+            const teams = cachedActiveTeams;
+            let totalParticipants = 0;
+            teams.forEach(t => totalParticipants += (t.members ? t.members.length : 1));
+
+            const pillTeams = document.getElementById('statPillTeams');
+            const pillParticipants = document.getElementById('statPillParticipants');
+            if (pillTeams) pillTeams.textContent = `${teams.length} Teams`;
+            if (pillParticipants) pillParticipants.textContent = `${totalParticipants} Participants`;
+
+            let filtered = teams;
+
+            if (searchFilter) {
+                filtered = teams.filter(t => {
+                    const matchTeam = t.team.toLowerCase().includes(searchFilter);
+                    const matchMember = t.members && t.members.some(m => m.toLowerCase().includes(searchFilter));
+                    return matchTeam || matchMember;
+                });
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);" class="glass">
+                        <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🔍</span>
+                        <h3>No teams found matching "${searchFilter}"</h3>
+                        <p>Try searching for a different team name or member username.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((t, idx) => {
+                const teamNum = String(idx + 1).padStart(2, '0');
+                const members = t.members || [t.team];
+
+                let membersHtml = '';
+                members.forEach(member => {
+                    const autoLoginUrl = `${getBaseUrl()}?team=${encodeURIComponent(t.team)}&user=${encodeURIComponent(member)}&pass=${encodeURIComponent(t.password)}&autologin=1`;
+                    const shareUrl = `${getBaseUrl()}?team=${encodeURIComponent(t.team)}&user=${encodeURIComponent(member)}`;
+
+                    membersHtml += `
+                        <div class="member-row">
+                            <div class="member-info">
+                                <span style="color: var(--accent-primary);">👤</span>
+                                <span>${member}</span>
+                            </div>
+                            <div class="member-actions">
+                                <button class="btn-mini btn btn-primary" onclick="quickLoginMember('${t.team}', '${member}', '${t.password}')" title="Direct 1-Click Login as ${member}">
+                                    🚀 Login
+                                </button>
+                                <button class="btn-mini btn btn-secondary" onclick="copyMemberShareLink('${t.team}', '${member}', '${t.password}')" title="Copy 1-Click Share Link for ${member}">
+                                    🔗 Link
+                                </button>
+                                <button class="btn-mini btn btn-secondary" onclick="openShareCard('${t.team}', '${member}', '${t.password}')" title="View & Copy WhatsApp / Share Card">
+                                    📋 Card
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="team-card glass">
+                        <div>
+                            <div class="team-card-header">
+                                <span class="team-num-badge">TEAM #${teamNum}</span>
+                                <span class="badge badge-success" style="font-size: 0.75rem; padding: 2px 8px;">🟢 Approved</span>
+                            </div>
+                            <h3 class="team-title">
+                                <span>👥</span> ${t.team}
+                            </h3>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Team Password</span>
+                                <button class="btn-mini btn btn-secondary" style="font-size: 0.7rem; padding: 1px 6px;" onclick="copyToClipboard('${t.password}', 'Password copied!')">
+                                    📋 Copy
+                                </button>
+                            </div>
+                            <div class="password-box">
+                                <span class="password-val" id="pwd-${teamNum}">${t.password}</span>
+                                <button onclick="togglePasswordVisibility('pwd-${teamNum}')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;" title="Toggle show/hide">
+                                    👁️
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 0.4rem;">
+                                Team Members (${members.length} Member${members.length > 1 ? 's' : ''})
+                            </span>
+                            <div class="members-section">
+                                ${membersHtml}
+                            </div>
+                        </div>
+
+                        <div class="card-footer-actions">
+                            <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="quickLoginMember('${t.team}', '${members[0]}', '${t.password}')">
+                                🚀 Team Instant Entry
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="openShareCard('${t.team}', '${members.join(', ')}', '${t.password}')">
+                                📤 Share Team
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function togglePasswordVisibility(elId) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (el.dataset.hidden === 'true') {
+                el.innerText = el.dataset.realPassword;
+                el.dataset.hidden = 'false';
+            } else {
+                el.dataset.realPassword = el.innerText;
+                el.innerText = '••••••••••••';
+                el.dataset.hidden = 'true';
+            }
+        }
+
+        function quickLoginMember(team, member, password) {
+            if (typeof window.directTeamLogin === 'function') {
+                if (typeof AnimationManager !== 'undefined') {
+                    AnimationManager.showToast(`Entering Arena as ${member} (${team})...`, 'success');
+                }
+                window.directTeamLogin(team, member, password, true);
+            } else {
+                window.location.href = `login.html?team=${encodeURIComponent(team)}&user=${encodeURIComponent(member)}&pass=${encodeURIComponent(password)}&autologin=1`;
+            }
+        }
+
+        function copyMemberShareLink(team, member, password) {
+            const url = `${getBaseUrl()}?team=${encodeURIComponent(team)}&user=${encodeURIComponent(member)}&pass=${encodeURIComponent(password)}&autologin=1`;
+            copyToClipboard(url, `✅ Copied 1-Click Login Link for ${member} (${team})!`);
+        }
+
+        function openShareCard(team, memberName, password) {
+            const modal = document.getElementById('shareModal');
+            const body = document.getElementById('shareModalBody');
+            const title = document.getElementById('shareModalTitle');
+            if (!modal || !body) return;
+
+            const directUrl = `${getBaseUrl()}?team=${encodeURIComponent(team)}&user=${encodeURIComponent(memberName.split(',')[0].trim())}&pass=${encodeURIComponent(password)}&autologin=1`;
+            const cardText = `🏆 CRISIS LAB — ARENA ACCESS\n👥 Team Name: ${team}\n👤 Member/User: ${memberName}\n🔑 Password: ${password}\n🌐 Direct 1-Click Arena Link:\n${directUrl}`;
+
+            title.innerText = `🔗 Share Card: ${team}`;
+            body.innerHTML = `
+                <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; font-family: monospace; font-size: 0.9rem; line-height: 1.6; color: #fff; margin-bottom: 1.25rem; white-space: pre-wrap; user-select: all;">${cardText}</div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="copyToClipboard(\`${cardText.replace(/`/g, '\\`')}\`, '✅ Share message copied for WhatsApp/Discord!')">
+                        📋 Copy Share Message
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyToClipboard('${directUrl}', '✅ Direct Login URL copied!')">
+                        🔗 Copy Direct Link
+                    </button>
+                    <button class="btn btn-secondary" onclick="quickLoginMember('${team}', '${memberName.split(',')[0].trim()}', '${password}')">
+                        🚀 Log In Now
+                    </button>
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('shareModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function copyAllRosterToClipboard() {
+            const teams = getAllRosterTeams();
+            let totalMembers = 0;
+            teams.forEach(t => totalMembers += (t.members ? t.members.length : 1));
+
+            let text = `=======================================================\n`;
+            text += `🏆 CRISIS LAB — ARENA CREDENTIALS ROSTER (${teams.length} TEAMS, ${totalMembers} PARTICIPANTS)\n`;
+            text += `=======================================================\n\n`;
+
+            teams.forEach((t, i) => {
+                const num = String(i + 1).padStart(2, '0');
+                const members = (t.members || []).join(', ');
+                const primaryMember = (t.members && t.members[0]) ? t.members[0] : t.team;
+                const link = `${getBaseUrl()}?team=${encodeURIComponent(t.team)}&user=${encodeURIComponent(primaryMember)}&pass=${encodeURIComponent(t.password)}&autologin=1`;
+                text += `[Team #${num}] ${t.team}\n`;
+                text += `  • Members: ${members}\n`;
+                text += `  • Password: ${t.password}\n`;
+                text += `  • 1-Click Link: ${link}\n\n`;
+            });
+
+            copyToClipboard(text, `✅ All ${teams.length} teams credentials copied to clipboard!`);
+        }
+
+        function exportTeamsCSV() {
+            const teams = getAllRosterTeams();
+            let csv = "Team Number,Team Name,Password,Member 1,Member 2,Member 3,Direct Login URL\n";
+
+            teams.forEach((t, i) => {
+                const num = i + 1;
+                const m1 = t.members && t.members[0] ? t.members[0] : '';
+                const m2 = t.members && t.members[1] ? t.members[1] : '';
+                const m3 = t.members && t.members[2] ? t.members[2] : '';
+                const link = `${getBaseUrl()}?team=${encodeURIComponent(t.team)}&user=${encodeURIComponent(m1)}&pass=${encodeURIComponent(t.password)}&autologin=1`;
+                csv += `"${num}","${t.team}","${t.password}","${m1}","${m2}","${m3}","${link}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `crisis_lab_teams_roster_${teams.length}_teams.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            if (typeof AnimationManager !== 'undefined') {
+                AnimationManager.showToast(`✅ Teams CSV for ${teams.length} teams exported successfully!`, 'success');
+            }
+        }
+
+        function copyToClipboard(text, successMsg = 'Copied to clipboard!') {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    if (typeof AnimationManager !== 'undefined') {
+                        AnimationManager.showToast(successMsg, 'success');
+                    } else {
+                        alert(successMsg);
+                    }
+                }).catch(() => fallbackCopy(text, successMsg));
+            } else {
+                fallbackCopy(text, successMsg);
+            }
+        }
+
+        function fallbackCopy(text, successMsg) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                if (typeof AnimationManager !== 'undefined') {
+                    AnimationManager.showToast(successMsg, 'success');
+                } else {
+                    alert(successMsg);
+                }
+            } catch(e) {}
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>

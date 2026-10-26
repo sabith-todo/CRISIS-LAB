@@ -1,1 +1,1 @@
-AIODYSSEY{api_fixed}
+key = NULL;

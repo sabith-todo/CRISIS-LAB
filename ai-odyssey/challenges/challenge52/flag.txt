@@ -1,0 +1,1 @@
+AIODYSSEY{html_iframe_sandbox_allow_same_origin}

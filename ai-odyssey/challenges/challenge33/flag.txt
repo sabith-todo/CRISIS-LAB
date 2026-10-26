@@ -1,1 +1,1 @@
-AIODYSSEY{svg_fixed}
+return &array[index];

@@ -1,1 +1,1 @@
-AIODYSSEY{flex_centered}
+math.isclose(actual_total, expected_total)

@@ -1,1 +1,1 @@
-AIODYSSEY{grid_fixed}
+cfg = copy.deepcopy(DEFAULT_CONFIG)

@@ -30,9 +30,9 @@
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="scoreboard.html" class="nav-link">Scoreboard</a>
             </div>
-            <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="toggle-icon">🌙</span>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
                 </button>
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
@@ -51,61 +51,53 @@
             <div class="rules-section glass p-4">
                 <h2>🎯 Competition Overview</h2>
                 <ul>
-                    <li>The competition consists of 50 debugging challenges across HTML, CSS, and JavaScript.</li>
-                    <li>Each challenge contains a broken webpage that you must inspect, debug, and repair.</li>
-                    <li>Once all bugs are fixed correctly, the webpage reveals a hidden flag.</li>
-                    <li>Submit the flag using the format AIODYSSEY{challenge_name} to earn points.</li>
-                    <li>The competition runs for 90 minutes with auto-submission when time expires.</li>
+                    <li>The competition consists of 76 debugging challenges across <strong>Python, C, Java, Web (HTML & CSS), and JavaScript</strong>.</li>
+                    <li>Designed for teams of <strong>1 to 3 members</strong> sharing a synchronized team account and collaborating on arena challenges in real-time.</li>
+                    <li>Challenges are structured across difficulty tiers: <strong>Easy (3 distinct errors to fix)</strong>, <strong>Medium (7 distinct interdependent errors to fix)</strong>, <strong>Advanced Hard Systems Engineering Traps</strong>, and the <strong>Grand Boss Distributed Arena</strong>.</li>
+                    <li>Detailed compiler and runtime error tracebacks are displayed alongside each problem code module.</li>
+                    <li>Two actionable hints (Hint 1 & Hint 2) are provided per challenge to guide you directly to the fix.</li>
+                    <li>Submit the exact code fix line or expression (e.g. <code>await asyncio.sleep(0.5)</code>, <code>with self._lock:</code>, <code>overflow: visible;</code>).</li>
                 </ul>
             </div>
 
             <div class="rules-section glass p-4">
-                <h2>📋 Challenge Format</h2>
+                <h2>⏱️ Dual-Timer & Team Closing Rules</h2>
                 <ul>
-                    <li>Each challenge includes a problem description and clear objective.</li>
-                    <li>Broken HTML, CSS, and JavaScript code is provided for inspection.</li>
-                    <li>Challenges are categorized as Easy (50pts), Medium (100pts), or Hard (200pts).</li>
-                    <li>Challenge 50 is the "Master Debug Arena" boss challenge worth 500 points.</li>
-                    <li>Each challenge has up to 2 hints available (using hints reduces bonus points).</li>
+                    <li><strong>Global Arena Clock (90 Min):</strong> Synchronized countdown for the entire competition across all pages.</li>
+                    <li><strong>Problem Countdown Timers:</strong> Individual timers per problem attempt:
+                        <ul>
+                            <li>🟢 <strong>Easy:</strong> 5 Minutes (300s)</li>
+                            <li>🟡 <strong>Medium:</strong> 7 Minutes (420s)</li>
+                            <li>🔴 <strong>Hard / Boss:</strong> 10 Minutes (600s)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Team-Wide Solve Lock:</strong> When any team member solves a challenge, points are credited to the team and the challenge is marked solved across all teammates' screens.</li>
+                    <li><strong>Team-Wide Expiry Lock:</strong> If a problem timer runs out (00:00), the challenge closes permanently for that team.</li>
                 </ul>
             </div>
 
             <div class="rules-section glass p-4">
-                <h2>🏆 Scoring System</h2>
+                <h2>🏆 Scoring & Bonus System</h2>
                 <ul>
-                    <li><strong>Base Points:</strong> Easy (50), Medium (100), Hard (200), Boss (500)</li>
-                    <li><strong>First Blood Bonus:</strong> +25 points for being the first to solve a challenge</li>
-                    <li><strong>No Hint Bonus:</strong> +20 points for solving without using any hints</li>
-                    <li><strong>Perfect Solve:</strong> +30 points for fixing all bugs without errors</li>
-                    <li><strong>Time Bonus:</strong> +10 points for every 5 minutes remaining</li>
-                    <li><strong>Maximum Score:</strong> 6000+ points available</li>
-                </ul>
-            </div>
-
-            <div class="rules-section glass p-4">
-                <h2>🔧 Debugging Rules</h2>
-                <ul>
-                    <li>Participants may inspect and modify the HTML, CSS, and JavaScript files.</li>
-                    <li>Do NOT modify the flag validation logic or flag values.</li>
-                    <li>Using browser developer tools (F12) is encouraged for debugging.</li>
-                    <li>External resources, libraries, or frameworks are NOT allowed.</li>
-                    <li>Each challenge must be solved independently without sharing solutions.</li>
+                    <li><strong>Base Points:</strong> Easy (50 pts), Medium (100 pts), Hard (200 pts), Grand Boss (1,000 pts)</li>
+                    <li><strong>Problem Time Bonus:</strong> +10 points for every full minute remaining on the problem countdown timer!</li>
+                    <li><strong>First Blood Bonus:</strong> +25 points for the first team to solve any challenge</li>
+                    <li><strong>No Hint Bonus:</strong> +20 points for solving without opening any hints</li>
+                    <li><strong>Live Leaderboard:</strong> Real-time team rankings, member contribution breakdowns, and live solve feed in the Scoreboard.</li>
                 </ul>
             </div>
 
             <div class="rules-section glass p-4">
                 <h2>🏅 Badges & Achievements</h2>
                 <ul>
-                    <li><strong>First Blood:</strong> Earned by solving any challenge first</li>
-                    <li><strong>Bug Hunter:</strong> Solve 10+ challenges</li>
-                    <li><strong>CSS Wizard:</strong> Solve all CSS challenges</li>
-                    <li><strong>JavaScript Ninja:</strong> Solve all JavaScript challenges</li>
-                    <li><strong>DOM Master:</strong> Solve 20+ challenges</li>
-                    <li><strong>Pixel Perfect:</strong> Perfect score on any challenge</li>
-                    <li><strong>Accessibility Hero:</strong> Solve accessibility challenges without hints</li>
-                    <li><strong>Performance Guru:</strong> Solve performance challenges within time bonus</li>
-                    <li><strong>Debug King:</strong> Solve 40+ challenges</li>
-                    <li><strong>AI Odyssey Champion:</strong> Complete all 50 challenges</li>
+                    <li><strong>🥇 First Blood:</strong> Earned by solving any challenge first</li>
+                    <li><strong>🐛 Bug Hunter:</strong> Solve 10+ challenges</li>
+                    <li><strong>🌐 Web Master:</strong> Solve all HTML, CSS, and JS challenges</li>
+                    <li><strong>🐍 Python Ace:</strong> Solve 10+ Python challenges</li>
+                    <li><strong>⚡ C Wizard:</strong> Solve 10+ C memory and pointer challenges</li>
+                    <li><strong>☕ Java Guru:</strong> Solve 10+ Java concurrency and OOP challenges</li>
+                    <li><strong>👑 Debug King:</strong> Solve 40+ challenges across all languages</li>
+                    <li><strong>🏆 Crisis Lab Champion:</strong> Complete all 76 challenges</li>
                 </ul>
             </div>
 
@@ -131,10 +123,9 @@
                 </ul>
             </div>
 
-            <div class="rules-actions">
+            <div class="rules-actions" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a href="login.html" class="btn btn-primary glow pulse btn-lg">
-                    <span>I Understand the Rules</span>
-                    <span>→</span>
+                    <span>I Understand the Rules → Enter Arena</span>
                 </a>
             </div>
         </div>
@@ -155,7 +146,7 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="footer-copyright">
-                <p>&copy; 2025 Crisis laboratory Debug Arena. For educational purposes.</p>
+                <p>&copy; 2026 Crisis Laboratory Debug Arena. For educational purposes.</p>
             </div>
         </div>
     </footer>
@@ -164,6 +155,8 @@
     <script src="assets/js/particles.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
+    <script src="assets/js/timer.js"></script>
     <script src="assets/js/challenges.js"></script>
 </body>
 </html>

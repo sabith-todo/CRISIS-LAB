@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="assets/css/animations.css">
     <link rel="stylesheet" href="assets/css/cyberpunk.css">
     <link rel="stylesheet" href="assets/css/pages.css">
+    <!-- STRICT PRE-RENDER AUTHENTICATION GATE -->
+    <script>
+        (function() {
+            var raw = localStorage.getItem('ai-odyssey-current-user');
+            if (!raw) {
+                window.location.replace('login.html');
+                return;
+            }
+            try {
+                var u = JSON.parse(raw);
+                if (!u || !u.username || !u.team) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                var st = localStorage.getItem('ai-odyssey-team-status-' + u.team) || u.status || 'pending';
+                if (u.role !== 'admin' && st === 'pending') {
+                    window.location.replace('login.html');
+                    return;
+                }
+            } catch(e) {
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="cyber-bg">
@@ -26,15 +50,17 @@
             <div class="nav-links" id="navLinks">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="rules.html" class="nav-link">Rules</a>
-                <a href="login.html" class="nav-link">Login</a>
                 <a href="dashboard.html" class="nav-link active">Dashboard</a>
                 <a href="scoreboard.html" class="nav-link">Scoreboard</a>
             </div>
-            <div class="nav-controls">
-                <div class="timer-display" id="timerDisplay">⏱ 90:00</div>
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="toggle-icon">🌙</span>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
                 </button>
+                <span id="connectionSyncBadge" class="badge" style="font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: rgba(48, 209, 88, 0.15); border: 1px solid var(--accent-success); color: var(--accent-success); display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <span class="presence-dot" style="background:#30d158; width:7px; height:7px; border-radius:50%; display:inline-block;"></span> Live Sync
+                </span>
+                <div class="timer-display" id="timerDisplay" title="Global 90-Minute Arena Timer">⏱ 90:00:00</div>
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -43,15 +69,52 @@
     </nav>
 
     <div class="dashboard-page">
+        <div class="start-arena-banner glass" id="startArenaBanner" style="margin-bottom: 2rem; padding: 1.25rem 1.75rem; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: linear-gradient(145deg, rgba(20, 26, 64, 0.7) 0%, rgba(10, 12, 30, 0.9) 100%); border: 1px solid var(--accent-primary); box-shadow: 0 8px 30px rgba(0,0,0,0.4), 0 0 20px rgba(0,240,255,0.15);">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-size: 2.2rem;" class="pulse">⏳</span>
+                <div>
+                    <h2 style="font-size: 1.35rem; margin: 0 0 0.25rem; color: var(--accent-primary); font-weight: 800;">Competition Arena: Waiting for Administrator</h2>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: 0.92rem;">The 90-minute global countdown and challenges will automatically unlock once started by the Super Admin.</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;" id="arenaBannerControls">
+                <button id="btnAdminStartArenaDashboard" class="btn btn-primary" style="display: none; font-weight: 800; padding: 0.7rem 1.4rem;">▶ Start 90m Arena Now</button>
+                <span class="badge badge-warning pulse" id="arenaBannerWaitingBadge" style="font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700;">⏱ Controlled by Admin</span>
+            </div>
+        </div>
+
+        <div class="team-status-banner glass" id="teamStatusBanner" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1px solid rgba(0, 240, 255, 0.2); background: rgba(13, 14, 38, 0.6);">
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">👥</span>
+                    <div>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Active Team</span>
+                        <h3 id="teamNameDisplay" style="margin: 0; font-size: 1.15rem; color: var(--accent-primary);">Team Alpha</h3>
+                    </div>
+                </div>
+                <div style="height: 28px; width: 1px; background: var(--border-color);" class="hide-mobile"></div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Current Member</span>
+                    <div id="activeMemberDisplay" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">👤 Player</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Teammates:</span>
+                <div id="teamMembersList" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                    <!-- Teammate badges rendered by JS -->
+                </div>
+            </div>
+        </div>
+
         <div class="dashboard-header">
             <div>
                 <h1>🗺️ Challenge Dashboard</h1>
-                <p style="color: var(--text-secondary);">Select a challenge to begin debugging</p>
+                <p style="color: var(--text-secondary);">Select a challenge to begin debugging • Solved tasks sync across teammates</p>
             </div>
             <div class="dashboard-info">
                 <div class="stat-card glass" style="padding: 0.75rem 1.5rem;">
                     <span class="stat-number" style="font-size: 1.25rem;" data-stat="solved">0</span>
-                    <span class="stat-label">/ <span data-stat="total">50</span> Solved</span>
+                    <span class="stat-label">/ <span data-stat="total">76</span> Solved</span>
                 </div>
                 <div class="stat-card glass" style="padding: 0.75rem 1.5rem;">
                     <span class="stat-number" style="font-size: 1.25rem; color: var(--accent-success);" data-stat="points">0</span>
@@ -81,6 +144,11 @@
 
         <div class="challenge-filters">
             <button class="filter-btn active" data-filter="all">🔍 All</button>
+            <button class="filter-btn" data-filter="python">🐍 Python</button>
+            <button class="filter-btn" data-filter="c">⚡ C</button>
+            <button class="filter-btn" data-filter="java">☕ Java</button>
+            <button class="filter-btn" data-filter="web">🌐 Web</button>
+            <button class="filter-btn" data-filter="javascript">⚡ JS</button>
             <button class="filter-btn" data-filter="easy">🟢 Easy</button>
             <button class="filter-btn" data-filter="medium">🟡 Medium</button>
             <button class="filter-btn" data-filter="hard">🔴 Hard</button>
@@ -100,6 +168,7 @@
     <script src="assets/js/particles.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
     <script src="assets/js/timer.js"></script>
     <script src="assets/js/challenges.js"></script>
     <script src="assets/js/main.js"></script>

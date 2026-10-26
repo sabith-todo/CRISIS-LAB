@@ -1,1 +1,1 @@
-AIODYSSEY{accordion_fixed}
+dest[max_len - 1] = '\0';

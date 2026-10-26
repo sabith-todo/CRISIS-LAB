@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scoreboard - CRISIS LAB | Debug the Arena</title>
+    <title>Live Scoreboard - CRISIS LAB | Debug the Arena</title>
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/animations.css">
     <link rel="stylesheet" href="assets/css/cyberpunk.css">
@@ -30,10 +30,11 @@
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="scoreboard.html" class="nav-link active">Scoreboard</a>
             </div>
-            <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="toggle-icon">🌙</span>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
                 </button>
+                <div class="timer-display" id="timerDisplay">⏱ 90:00:00</div>
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -44,28 +45,63 @@
     <div class="scoreboard-page">
         <div class="scoreboard-container">
             <div class="scoreboard-header">
-                <h1>🏆 Leaderboard</h1>
-                <p>Live rankings of all competing teams</p>
+                <h1>🏆 Live Team Scoreboard</h1>
+                <p>Real-time rankings & member contributions across all competing teams</p>
             </div>
 
-            <div class="scoreboard-controls">
-                <input type="text" id="scoreboardSearch" class="scoreboard-search" placeholder="🔍 Search team name...">
-                <div class="timer-display" id="timerDisplay">⏱ 90:00</div>
+            <!-- Stats Bar -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="stat-card glass" style="padding: 1rem 1.5rem; text-align: center;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Teams</span>
+                    <h3 id="statTotalTeams" style="margin: 0.25rem 0 0; font-size: 1.6rem; color: var(--accent-primary);">0</h3>
+                </div>
+                <div class="stat-card glass" style="padding: 1rem 1.5rem; text-align: center;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Solves</span>
+                    <h3 id="statTotalSolves" style="margin: 0.25rem 0 0; font-size: 1.6rem; color: var(--accent-success);">0</h3>
+                </div>
+                <div class="stat-card glass" style="padding: 1rem 1.5rem; text-align: center;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Top Score</span>
+                    <h3 id="statTopScore" style="margin: 0.25rem 0 0; font-size: 1.6rem; color: var(--accent-warning);">0 pts</h3>
+                </div>
+                <div class="stat-card glass" style="padding: 1rem 1.5rem; text-align: center;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Leader</span>
+                    <h3 id="statLeaderTeam" style="margin: 0.25rem 0 0; font-size: 1.2rem; color: var(--text-primary);">-</h3>
+                </div>
             </div>
 
-            <div class="table-container glass" style="overflow-x: auto; padding: 0;">
-                <table class="scoreboard-table">
+            <!-- FROZEN SCOREBOARD BANNER -->
+            <div id="scoreboardFrozenBanner" class="glass" style="display: none; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--accent-primary); background: rgba(0, 240, 255, 0.08); text-align: center;">
+                <span style="font-size: 1.4rem;">🧊</span>
+                <strong style="color: var(--accent-primary); font-size: 1.1rem; margin-left: 0.5rem;">SCOREBOARD FROZEN</strong>
+                <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-secondary);">
+                    Rankings are currently locked for the final sprint. Keep solving challenges — final results will be revealed at the award ceremony!
+                </p>
+            </div>
+
+            <!-- Controls -->
+            <div class="scoreboard-controls" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                <input type="text" id="scoreboardSearch" class="scoreboard-search" placeholder="🔍 Search team or member name..." style="flex: 1; max-width: 400px;">
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <span class="pulse" id="liveStatusIndicator" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-success);"></span>
+                    <span id="liveStatusText" style="font-size: 0.85rem; color: var(--accent-success); font-weight: 600;">LIVE UPDATING</span>
+                    <button class="btn btn-secondary btn-sm" id="refreshScoreboardBtn" style="margin-left: 0.5rem;">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <!-- Scoreboard Table -->
+            <div class="table-container glass" style="overflow-x: auto; padding: 0; border-radius: 12px; margin-bottom: 2rem;">
+                <table class="scoreboard-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th>Rank</th>
-                            <th>Team Name</th>
-                            <th>Solved</th>
-                            <th>Easy</th>
-                            <th>Medium</th>
-                            <th>Hard</th>
-                            <th>Total Points</th>
-                            <th>Last Solve</th>
-                            <th>Badges</th>
+                            <th style="width: 70px;">Rank</th>
+                            <th>Team & Members</th>
+                            <th style="text-align: center;">Total Solved</th>
+                            <th style="text-align: center;">Easy</th>
+                            <th style="text-align: center;">Medium</th>
+                            <th style="text-align: center;">Hard</th>
+                            <th style="text-align: right;">Total Points</th>
+                            <th style="text-align: center;">Last Solve</th>
+                            <th>Recent Solver</th>
                         </tr>
                     </thead>
                     <tbody id="scoreboardBody">
@@ -73,20 +109,33 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Live Solves Feed -->
+            <div class="glass" style="padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.15);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <h3 style="margin: 0; font-size: 1.15rem; color: var(--accent-primary); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>⚡</span> Live Team Solve Stream
+                    </h3>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Real-time member activity</span>
+                </div>
+                <div id="liveSolveFeed" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto;">
+                    <!-- Live feed items rendered by JS -->
+                </div>
+            </div>
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="assets/js/supabase-config.js"></script>
     <script src="assets/js/supabase-client.js"></script>
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/particles.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
     <script src="assets/js/timer.js"></script>
     <script src="assets/js/challenges.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/scoreboard-supabase.js"></script>
 </body>
 </html>
-

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 66 - ⚡ GRAND BOSS: QUANTUMNEXUS DISTRIBUTED ENGINE | CRISIS LAB</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/animations.css">
+    <link rel="stylesheet" href="../../assets/css/cyberpunk.css">
+    <link rel="stylesheet" href="../../assets/css/pages.css">
+    <!-- STRICT PRE-RENDER AUTHENTICATION GATE -->
+    <script>
+        (function() {
+            var raw = localStorage.getItem('ai-odyssey-current-user');
+            if (!raw) {
+                window.location.replace('../../login.html');
+                return;
+            }
+            try {
+                var u = JSON.parse(raw);
+                if (!u || !u.username || !u.team) {
+                    window.location.replace('../../login.html');
+                    return;
+                }
+                var st = localStorage.getItem('ai-odyssey-team-status-' + u.team) || u.status || 'pending';
+                if (u.role !== 'admin' && st === 'pending') {
+                    window.location.replace('../../login.html');
+                    return;
+                }
+            } catch(e) {
+                window.location.replace('../../login.html');
+            }
+        })();
+    </script>
+    <style>
+        .boss-card {
+            border: 2px solid #ff007f;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.3), inset 0 0 15px rgba(255, 0, 127, 0.1);
+            background: linear-gradient(135deg, rgba(20, 10, 35, 0.95), rgba(10, 5, 20, 0.98));
+        }
+        .boss-badge {
+            background: linear-gradient(90deg, #ff007f, #7928ca);
+            color: #fff;
+            font-weight: 900;
+            letter-spacing: 2px;
+            padding: 0.35rem 0.85rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 0 15px rgba(255,0,127,0.5);
+        }
+        .subsystem-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .subsystem-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .subsystem-card.solved {
+            border-color: #30d158;
+            background: rgba(48, 209, 88, 0.05);
+        }
+        .subsystem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .subsystem-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #00f0ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .code-trap {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: #ff9500;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 0.75rem 0;
+        }
+        .error-log {
+            background: rgba(255, 59, 48, 0.1);
+            border-left: 3px solid #ff3b30;
+            padding: 0.6rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #ff8080;
+            margin-bottom: 1rem;
+        }
+        .input-fix-box {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .input-fix {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,240,255,0.4);
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+        .btn-verify {
+            background: linear-gradient(135deg, #00f0ff, #7928ca);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,240,255,0.4);
+        }
+        .boss-progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            height: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255,0,127,0.3);
+        }
+        .boss-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff007f, #00f0ff);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px #ff007f;
+        }
+        .boss-submit-section {
+            background: linear-gradient(135deg, rgba(255,0,127,0.1), rgba(121,40,202,0.15));
+            border: 2px dashed rgba(255,0,127,0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .boss-flag-input {
+            width: 100%;
+            max-width: 600px;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid #ff007f;
+            background: rgba(0,0,0,0.7);
+            color: #00ff88;
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .boss-submit-btn {
+            background: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.85rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(255,0,127,0.6);
+            transition: all 0.2s ease;
+        }
+        .boss-submit-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 35px rgba(255,0,127,0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-bg">
+        <div class="grid-overlay"></div>
+        <div class="scan-line"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <nav class="navbar glass" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">CRISIS LAB</span>
+                <span class="brand-sub">GRAND BOSS ARENA</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="../../index.html" class="nav-link">Home</a>
+                <a href="../../rules.html" class="nav-link">Rules</a>
+                <a href="../../dashboard.html" class="nav-link">Dashboard</a>
+                <a href="../../scoreboard.html" class="nav-link">Scoreboard</a>
+            </div>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
+                </button>
+                <div class="timer-display" id="timerDisplay" title="Global 90-Minute Arena Timer">⏱ 90:00:00</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="challenge-page" style="padding-top: 80px;">
+        <div class="challenge-container">
+            <div class="challenge-card boss-card">
+                <div class="challenge-header" style="border-bottom: 1px solid rgba(255,0,127,0.3); padding-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span class="boss-badge">👑 GRAND BOSS ARENA</span>
+                            <span class="badge badge-hard" style="font-size: 0.85rem; padding: 0.35rem 0.8rem; background: rgba(255,0,127,0.2); border: 1px solid #ff007f; color: #ff007f;">
+                                1,000 PTS
+                            </span>
+                        </div>
+                        <a href="../../dashboard.html" class="btn btn-outline btn-sm">← Back to Arena</a>
+                    </div>
+                    <h1 style="color: #fff; margin: 1rem 0 0.5rem; font-size: 2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 20px rgba(255,0,127,0.6);">
+                        ⚡ QUANTUMNEXUS DISTRIBUTED ENGINE
+                    </h1>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: 1.05rem; line-height: 1.6;">
+                        The central core of the Odyssey Network is undergoing cascading subsystem collapse. 5 deep interconnected architectural bugs across Python DSA, OOP Metaclasses, Heap Schedulers, Prefix Tries, and Concurrency Guards are causing catastrophic deadlocks. Repair all 5 subsystems to unlock the Dynamic Master Boss Flag!
+                    </p>
+
+                    <div style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem;">
+                            <span>SUBSYSTEM RESTORATION PROGRESS</span>
+                            <span id="bossProgressText" style="color: #00f0ff;">0 / 5</span>
+                        </div>
+                        <div class="boss-progress-bar">
+                            <div class="boss-progress-fill" id="bossProgressFill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── 5 INTERCONNECTED SUBSYSTEMS ────────────────────────────── -->
+                <div class="subsystem-grid">
+                    
+                    <!-- Subsystem 1 -->
+                    <div class="subsystem-card" id="card-sub1">
+                        <div class="subsystem-header">
+                            <div class="subsystem-title"><span>1.</span> DAG ROUTER — In-Place In-Degree Corruption</div>
+                            <span class="badge" style="background: rgba(0,240,255,0.15); color: #00f0ff;">Subsystem 1</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                            During topological sorting of the microservice dependency graph, mutating <code>self.in_degree</code> directly poisons subsequent calls.
+                        </p>
+                        <div class="code-trap">def topological_sort(self) -> list:
+    # BUG: Mutating self.in_degree in-place corrupts the graph permanently!
+    <span class="code-trap">in_degree = self.in_degree  # ← BUG: Reference alias instead of copy</span>
+    queue = deque([u for u in self.nodes if in_degree[u] == 0])</div>
+                        <div class="error-log">⚠ RuntimeError: Cycle detected on diamond DAG — in_degree dictionary corrupted in-place</div>
+                        <div class="input-fix-box">
+                            <input type="text" class="input-fix" id="fix-sub1" placeholder="Enter corrected assignment line (e.g. in_degree = dict(self.in_degree))" autocomplete="off">
+                            <button class="btn-verify" onclick="verifySubsystem(1)">Test Fix</button>
+                        </div>
+                    </div>
+
+                    <!-- Subsystem 2 -->
+                    <div class="subsystem-card" id="card-sub2">
+                        <div class="subsystem-header">
+                            <div class="subsystem-title"><span>2.</span> METACLASS MRO — Keyword Argument Forwarding</div>
+                            <span class="badge" style="background: rgba(0,240,255,0.15); color: #00f0ff;">Subsystem 2</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                            <code>TransactionalMeta.__new__</code> fails to forward <code>**kwargs</code> to <code>super().__new__</code>, breaking cooperative multi-inheritance.
+                        </p>
+                        <div class="code-trap">class TransactionalMeta(type):
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        # BUG: Dropping **kwargs breaks cooperative multi-inheritance MRO chain
+        <span class="code-trap">return super().__new__(mcs, name, bases, namespace)  # ← BUG: Missing **kwargs</span></div>
+                        <div class="error-log">⚠ TypeError: TransactionalMeta.__new__() takes no keyword arguments — C3 MRO broken</div>
+                        <div class="input-fix-box">
+                            <input type="text" class="input-fix" id="fix-sub2" placeholder="Enter corrected super().__new__ invocation (e.g. super().__new__(mcs, name, bases, namespace, **kwargs))" autocomplete="off">
+                            <button class="btn-verify" onclick="verifySubsystem(2)">Test Fix</button>
+                        </div>
+                    </div>
+
+                    <!-- Subsystem 3 -->
+                    <div class="subsystem-card" id="card-sub3">
+                        <div class="subsystem-header">
+                            <div class="subsystem-title"><span>3.</span> PRIORITY HEAP — Coroutine Comparison Crash</div>
+                            <span class="badge" style="background: rgba(0,240,255,0.15); color: #00f0ff;">Subsystem 3</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                            Heap tasks with equal priority crash Python's <code>heapq</code> because coroutines cannot be compared with <code>&lt;</code>.
+                        </p>
+                        <div class="code-trap">def schedule(self, coro, priority: int = 10):
+    # BUG: When priorities collide, heapq tries to compare coroutines directly (TypeError)
+    <span class="code-trap">entry = (priority, coro, task_id)  # ← BUG: Missing unique sequence counter tie-breaker</span>
+    heapq.heappush(self._heap, entry)</div>
+                        <div class="error-log">⚠ TypeError: '&lt;' not supported between instances of 'coroutine' and 'coroutine'</div>
+                        <div class="input-fix-box">
+                            <input type="text" class="input-fix" id="fix-sub3" placeholder="What sequence counter should be added as tie-breaker? (e.g. next(self._counter))" autocomplete="off">
+                            <button class="btn-verify" onclick="verifySubsystem(3)">Test Fix</button>
+                        </div>
+                    </div>
+
+                    <!-- Subsystem 4 -->
+                    <div class="subsystem-card" id="card-sub4">
+                        <div class="subsystem-header">
+                            <div class="subsystem-title"><span>4.</span> PREFIX TRIE — Mutable Default Argument Memory Leak</div>
+                            <span class="badge" style="background: rgba(0,240,255,0.15); color: #00f0ff;">Subsystem 4</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                            The spatial search trie query accumulates historical queries because <code>path: list = []</code> retains mutable default state.
+                        </p>
+                        <div class="code-trap">class SpatialPrefixTrieIndex:
+    # BUG: Mutable default list accumulates historical searches across different callers
+    <span class="code-trap">def query_prefix(self, prefix: str, path: list = []) -> list:  # ← BUG: Mutable default list</span>
+        if not path: path = []</div>
+                        <div class="error-log">⚠ MemoryPoisoning: SpatialPrefixTrieIndex retains contaminated history via mutable default list</div>
+                        <div class="input-fix-box">
+                            <input type="text" class="input-fix" id="fix-sub4" placeholder="What should path default to? (e.g. path: list = None)" autocomplete="off">
+                            <button class="btn-verify" onclick="verifySubsystem(4)">Test Fix</button>
+                        </div>
+                    </div>
+
+                    <!-- Subsystem 5 -->
+                    <div class="subsystem-card" id="card-sub5">
+                        <div class="subsystem-header">
+                            <div class="subsystem-title"><span>5.</span> RE-ENTRANCY GUARD — BaseException Hierarchy Trap</div>
+                            <span class="badge" style="background: rgba(0,240,255,0.15); color: #00f0ff;">Subsystem 5</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.5rem;">
+                            Catching <code>BaseException</code> swallows <code>asyncio.CancelledError</code>, deadlocking the engine when transactions cancel.
+                        </p>
+                        <div class="code-trap">async def execute_atomic(self, coro):
+    try:
+        return await coro
+    <span class="code-trap">except BaseException as e:  # ← BUG: Catches BaseException and swallows asyncio.CancelledError</span>
+        print(f"[RECOVERY] Rolling back: {e}")
+        raise</div>
+                        <div class="error-log">⚠ ZombieDeadlock: Task cancellation masked; engine state lock permanently deadlocked</div>
+                        <div class="input-fix-box">
+                            <input type="text" class="input-fix" id="fix-sub5" placeholder="What exception class should be caught instead of BaseException? (e.g. except Exception as e:)" autocomplete="off">
+                            <button class="btn-verify" onclick="verifySubsystem(5)">Test Fix</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BOSS FLAG SUBMISSION SECTION ───────────────────── -->
+                <div class="boss-submit-section" id="bossFlagSection">
+                    <h2 style="color: #ff007f; font-size: 1.5rem; font-weight: 900; margin: 0 0 0.5rem; text-shadow: 0 0 15px rgba(255,0,127,0.5);">
+                        🏆 Submit Master Grand Boss Flag
+                    </h2>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.25rem;">
+                        Once all 5 subsystems are repaired, the Master Grand Boss Flag is unlocked. Submit it below to claim your <strong style="color: #ffd700;">1,000 points</strong> and the legendary <em>Boss Slayer Buff</em>!
+                    </p>
+
+                    <div id="bossFlagReveal" style="display: none; background: rgba(0,255,136,0.1); border: 1px solid var(--accent-success); border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 1.25rem; font-size: 1rem; color: var(--accent-success); font-family: monospace;">
+                        <!-- Auto-revealed flag -->
+                    </div>
+
+                    <form id="challengeForm" class="challenge-submit-form" onsubmit="handleBossSubmit(event)">
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                            <input type="text" id="flagInput" class="boss-flag-input" placeholder="BOSS{...} — submit the Master Boss Flag here" autocomplete="off" required>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <button type="submit" class="boss-submit-btn">
+                                ⚔️ SUBMIT BOSS FLAG (1,000 PTS)
+                            </button>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                Challenge ID: <strong style="color: #fff;">#66</strong> • Max Points: <strong style="color: #ffd700;">1,000</strong>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-config.js"></script>
+    <script src="../../assets/js/supabase-client.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/particles.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script src="../../assets/js/animations.js"></script>
+    <script src="../../assets/js/timer.js"></script>
+    <script src="../../assets/js/challenges.js"></script>
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/ai-coach.js"></script>
+
+    <script>
+    // ── QUANTUMNEXUS GRAND BOSS VERIFICATION ENGINE ────────────────────
+    const verified = { 1: false, 2: false, 3: false, 4: false, 5: false };
+    
+    // 20 dynamic language permutations containing the 5 languages: html, css, js, python, java
+    const DYNAMIC_BOSS_FLAGS = [
+        'BOSS{this_flag_is_contain_five_language_html_css_js_python_java}',
+        'BOSS{this_flag_is_contain_five_language_html_java_js_python_css}',
+        'BOSS{this_flag_is_contain_five_language_css_html_js_java_python}',
+        'BOSS{this_flag_is_contain_five_language_js_python_java_html_css}',
+        'BOSS{this_flag_is_contain_five_language_python_js_css_html_java}',
+        'BOSS{this_flag_is_contain_five_language_java_python_html_css_js}',
+        'BOSS{this_flag_is_contain_five_language_html_python_css_java_js}',
+        'BOSS{this_flag_is_contain_five_language_css_java_python_js_html}',
+        'BOSS{this_flag_is_contain_five_language_js_html_java_css_python}',
+        'BOSS{this_flag_is_contain_five_language_python_html_js_java_css}',
+        'BOSS{this_flag_is_contain_five_language_java_css_js_python_html}',
+        'BOSS{this_flag_is_contain_five_language_html_js_python_css_java}',
+        'BOSS{this_flag_is_contain_five_language_css_python_html_java_js}',
+        'BOSS{this_flag_is_contain_five_language_js_css_java_html_python}',
+        'BOSS{this_flag_is_contain_five_language_python_java_css_js_html}',
+        'BOSS{this_flag_is_contain_five_language_java_html_python_css_js}',
+        'BOSS{this_flag_is_contain_five_language_html_css_java_js_python}',
+        'BOSS{this_flag_is_contain_five_language_css_js_python_html_java}',
+        'BOSS{this_flag_is_contain_five_language_js_java_html_python_css}',
+        'BOSS{this_flag_is_contain_five_language_python_css_java_html_js}'
+    ];
+
+    let currentFlagIndex = Math.floor(Date.now() / 20000) % DYNAMIC_BOSS_FLAGS.length;
+    function getActiveBossFlag() {
+        currentFlagIndex = Math.floor(Date.now() / 20000) % DYNAMIC_BOSS_FLAGS.length;
+        return DYNAMIC_BOSS_FLAGS[currentFlagIndex];
+    }
+    const MASTER_BOSS_FLAG = getActiveBossFlag();
+
+    const solutions = {
+        1: ['dict(self.in_degree)', 'dict(self.in_degree.items())', 'in_degree = dict(self.in_degree)', 'self.in_degree.copy()'],
+        2: ['super().__new__(mcs, name, bases, namespace, **kwargs)', 'super().__new__(mcs, name, bases, namespace, **kwargs', '**kwargs'],
+        3: ['next(self._counter)', 'next(self._counter), coro, task_id', 'self._counter', 'count'],
+        4: ['path: list = None', 'path: optional[list] = none', 'path = none', 'none'],
+        5: ['except exception as e:', 'exception', 'except exception', 'exception as e']
+    };
+
+    function verifySubsystem(num) {
+        const input = document.getElementById('fix-sub' + num);
+        if (!input) return;
+        const val = input.value.trim().toLowerCase();
+        if (!val) {
+            if (typeof AnimationManager !== 'undefined') AnimationManager.showToast('Please enter your fix code first.', 'warning');
+            return;
+        }
+
+        const valid = solutions[num].some(sol => val.includes(sol.toLowerCase()));
+        if (valid) {
+            verified[num] = true;
+            input.disabled = true;
+            input.style.borderColor = '#30d158';
+            input.style.color = '#30d158';
+            const card = document.getElementById('card-sub' + num);
+            if (card) card.classList.add('solved');
+
+            if (typeof AnimationManager !== 'undefined') {
+                AnimationManager.showToast(`✅ Subsystem ${num} Verified & Repaired!`, 'success');
+            }
+            updateBossProgress();
+        } else {
+            input.style.borderColor = '#ff3b30';
+            if (typeof AnimationManager !== 'undefined') {
+                AnimationManager.showToast(`❌ Verification failed for Subsystem ${num}. Check the hint & traceback.`, 'error');
+            }
+        }
+    }
+
+    function updateBossProgress() {
+        const count = Object.values(verified).filter(Boolean).length;
+        const fill = document.getElementById('bossProgressFill');
+        const text = document.getElementById('bossProgressText');
+        if (fill) fill.style.width = (count * 20) + '%';
+        if (text) text.textContent = `${count} / 5`;
+
+        if (count === 5) {
+            const reveal = document.getElementById('bossFlagReveal');
+            const flagInput = document.getElementById('flagInput');
+            const activeFlag = getActiveBossFlag();
+            if (reveal) {
+                reveal.style.display = 'block';
+                reveal.innerHTML = `🎉 <strong>ALL 5 SUBSYSTEMS OPERATIONAL!</strong><br>Dynamic Master Boss Flag: <strong style="color:#00ff88; word-break:break-all;">${activeFlag}</strong><br><small style="color:var(--text-secondary); font-size:0.8rem;">(Dynamic Language Order Permutation #${currentFlagIndex + 1}/20)</small>`;
+            }
+            if (flagInput && !flagInput.value) {
+                flagInput.value = activeFlag;
+            }
+            if (typeof AnimationManager !== 'undefined') {
+                AnimationManager.showToast('🏆 QUANTUMNEXUS RESTORED! Submit the Master Boss Flag!', 'success', 6000);
+            }
+        }
+    }
+
+    function handleBossSubmit(e) {
+        if (window.App && typeof window.App.handleChallengeSubmit === 'function') {
+            window.App.handleChallengeSubmit(e);
+        }
+    }
+    </script>
+</body>
+</html>

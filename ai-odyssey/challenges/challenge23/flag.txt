@@ -1,1 +1,1 @@
-AIODYSSEY{async_fixed}
+char* uuid_buf = (char*)malloc(32);

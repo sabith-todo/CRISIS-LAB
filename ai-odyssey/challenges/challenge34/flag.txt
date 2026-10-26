@@ -1,1 +1,1 @@
-AIODYSSEY{loop_fixed}
+AIODYSSEY{c_bitshift_upper_nibble_mask_fix}

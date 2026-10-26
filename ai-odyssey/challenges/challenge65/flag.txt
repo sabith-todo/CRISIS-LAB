@@ -1,0 +1,1 @@
+Math.abs(subtotal - expectedSubtotal) < Number.EPSILON

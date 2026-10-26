@@ -1,1 +1,1 @@
-AIODYSSEY{storage_fixed}
+destroy_tree(root->left); destroy_tree(root->right); free(root);

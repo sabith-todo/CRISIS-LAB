@@ -1,1 +1,1 @@
-AIODYSSEY{MASTER_DEBUGGER}
+AIODYSSEY{java_register_as_parallel_capable_classloader}

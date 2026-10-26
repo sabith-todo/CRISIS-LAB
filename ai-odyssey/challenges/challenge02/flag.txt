@@ -1,1 +1,1 @@
-AIODYSSEY{navbar_fixed}
+lambda x, i=i: x * i

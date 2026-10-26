@@ -1,1 +1,1 @@
-AIODYSSEY{lazy_fixed}
+finally { currentUser.remove(); }

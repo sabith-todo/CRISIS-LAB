@@ -1,1 +1,1 @@
-AIODYSSEY{dropdown_fixed}
+readings: list = field(default_factory=list)

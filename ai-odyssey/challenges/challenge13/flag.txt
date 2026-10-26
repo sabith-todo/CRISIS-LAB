@@ -1,1 +1,1 @@
-AIODYSSEY{counter_fixed}
+output, errors = proc.communicate()

@@ -1,1 +1,1 @@
-AIODYSSEY{variables_fixed}
+private static volatile SingletonFactory instance;

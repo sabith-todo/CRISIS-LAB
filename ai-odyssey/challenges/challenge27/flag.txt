@@ -1,1 +1,1 @@
-AIODYSSEY{session_fixed}
+printf("%s", username);

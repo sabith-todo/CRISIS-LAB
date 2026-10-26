@@ -1,1 +1,1 @@
-AIODYSSEY{notifications_fixed}
+try (URLClassLoader loader = new URLClassLoader(new URL[]{jarUrl}))

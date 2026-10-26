@@ -1,1 +1,1 @@
-AIODYSSEY{timeout_fixed}
+AIODYSSEY{java_forkjoin_fork_one_compute_other}

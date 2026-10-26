@@ -1,1 +1,1 @@
-AIODYSSEY{tabs_fixed}
+if (count > SIZE_MAX / sizeof(Packet)) return NULL;

@@ -1,1 +1,1 @@
-AIODYSSEY{search_fixed}
+Node* next = current->next; free(current); current = next;

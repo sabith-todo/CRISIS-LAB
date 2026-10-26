@@ -1,1 +1,1 @@
-AIODYSSEY{slider_fixed}
+char_table[(unsigned char)c]++;

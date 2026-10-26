@@ -33,9 +33,9 @@
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="scoreboard.html" class="nav-link">Scoreboard</a>
             </div>
-            <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="toggle-icon">🌙</span>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
                 </button>
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
@@ -57,7 +57,7 @@
                 <div class="terminal-body" id="terminalBody">
                     <p class="terminal-line" data-delay="0"><span class="prompt">root@arena:~$</span> <span class="command">initialize_competition</span></p>
                     <p class="terminal-line" data-delay="500"><span class="output">[SYSTEM] Loading CRISIS LAB Debug Arena...</span></p>
-                    <p class="terminal-line" data-delay="1000"><span class="output">[SYSTEM] 50 challenges loaded successfully</span></p>
+                    <p class="terminal-line" data-delay="1000"><span class="output">[SYSTEM] 76 challenges loaded successfully</span></p>
                     <p class="terminal-line" data-delay="1500"><span class="output">[SYSTEM] Arena is ready. Let the debugging begin.</span></p>
                     <p class="terminal-line cursor-blink" data-delay="2000"><span class="prompt">root@arena:~$</span> <span class="command">_</span></p>
                 </div>
@@ -65,34 +65,34 @@
 
             <h1 class="hero-title glitch" data-text="CRISIS LAB">CRISIS LAB</h1>
             <h2 class="hero-subtitle">DEBUG THE ARENA</h2>
-            <p class="hero-description">50 Frontend Debugging Challenges. Test your skills. Earn your badges. Claim victory.</p>
+            <p class="hero-description">76 Multi-Language Debugging Challenges across Python, C, Java, HTML, CSS, and JavaScript. Inspect the error output, collaborate in 1-3 member teams, race the problem timers, and claim victory.</p>
             
             <div class="hero-stats">
                 <div class="stat-card glass">
-                    <span class="stat-number" data-target="50">0</span>
+                    <span class="stat-number" data-target="76">0</span>
                     <span class="stat-label">Challenges</span>
                 </div>
                 <div class="stat-card glass">
-                    <span class="stat-number" data-target="6000">0</span>
+                    <span class="stat-number" data-target="10000">0</span>
                     <span class="stat-label">Max Points</span>
                 </div>
                 <div class="stat-card glass">
                     <span class="stat-number" data-target="90">0</span>
-                    <span class="stat-label">Minutes</span>
+                    <span class="stat-label">Minutes Arena</span>
                 </div>
                 <div class="stat-card glass">
-                    <span class="stat-number" data-target="10">0</span>
-                    <span class="stat-label">Badges</span>
+                    <span class="stat-number" data-target="6">0</span>
+                    <span class="stat-label">Tech Stacks</span>
                 </div>
             </div>
 
             <div class="hero-actions">
-                <a href="rules.html" class="btn btn-primary glow pulse">
+                <a href="dashboard.html" class="btn btn-primary glow pulse">
                     <span class="btn-text">Enter the Arena</span>
                     <span class="btn-icon">→</span>
                 </a>
-                <a href="#about" class="btn btn-secondary">
-                    <span class="btn-text">Learn More</span>
+                <a href="scoreboard.html" class="btn btn-secondary">
+                    <span class="btn-text">Live Scoreboard</span>
                 </a>
             </div>
         </div>
@@ -111,23 +111,23 @@
         <div class="about-grid">
             <div class="about-card glass" data-aos="fade-up">
                 <div class="card-icon">🔍</div>
-                <h3>Debug Challenges</h3>
-                <p>50 unique debugging challenges ranging from HTML structure to complex JavaScript logic. Each challenge is a broken webpage waiting to be fixed.</p>
+                <h3>Tiered Multi-Error Debugging</h3>
+                <p>Challenges feature structured multi-defect tiers: Easy (3 Errors), Medium (7 Errors), and Advanced Hard Systems Engineering traps accompanied by compiler and runtime error tracebacks.</p>
             </div>
             <div class="about-card glass" data-aos="fade-up" data-delay="100">
-                <div class="card-icon">🏆</div>
-                <h3>Compete & Win</h3>
-                <p>Earn points, unlock badges, and climb the leaderboard. First blood bonuses, perfect solve rewards, and time bonuses await the brave.</p>
+                <div class="card-icon">👥</div>
+                <h3>Team Collaboration</h3>
+                <p>Compete in teams of 1 to 3 members! When any member solves a challenge, points immediately sync to the live team scoreboard.</p>
             </div>
             <div class="about-card glass" data-aos="fade-up" data-delay="200">
-                <div class="card-icon">🛡️</div>
-                <h3>Learn by Doing</h3>
-                <p>Master HTML, CSS, and JavaScript through hands-on debugging. Each challenge teaches real-world frontend development skills.</p>
+                <div class="card-icon">⏱️</div>
+                <h3>Dual-Timer Engine</h3>
+                <p>Global 90-minute arena clock + individual difficulty problem timers (Easy: 5m, Medium: 7m, Hard: 10m) with bonus points for speedy fixes.</p>
             </div>
             <div class="about-card glass" data-aos="fade-up" data-delay="300">
                 <div class="card-icon">⚡</div>
-                <h3>Real-time Scoreboard</h3>
-                <p>Live rankings, team standings, and progress tracking. Every fix updates your position on the leaderboard instantly.</p>
+                <h3>Live Results & Solves Stream</h3>
+                <p>Real-time team standings, member contribution breakdowns, and live solve notifications streaming as participants fix bugs.</p>
             </div>
         </div>
     </section>
@@ -138,79 +138,54 @@
             <h2 class="section-title">Challenge Categories</h2>
             <div class="section-divider"></div>
         </div>
-        <div class="categories-grid">
-            <div class="category-card glass" style="--cat-color: #ff6b6b">
+        <div class="categories-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div class="category-card glass" style="--cat-color: #3572A5">
                 <div class="category-header">
-                    <span class="category-icon"></></span>
+                    <span class="category-icon">🐍</span>
+                    <h3>Python</h3>
+                </div>
+                <p>Syntax errors, scopes, mutable defaults, slicing, recursion, and type conversions</p>
+                <span class="category-count">17 Challenges</span>
+            </div>
+            <div class="category-card glass" style="--cat-color: #00f0ff">
+                <div class="category-header">
+                    <span class="category-icon">⚡</span>
+                    <h3>C Language</h3>
+                </div>
+                <p>Pointers, memory allocation, buffer sizes, format specifiers, structs, and stack bounds</p>
+                <span class="category-count">17 Challenges</span>
+            </div>
+            <div class="category-card glass" style="--cat-color: #f89820">
+                <div class="category-header">
+                    <span class="category-icon">☕</span>
+                    <h3>Java</h3>
+                </div>
+                <p>Null pointers, static context, string equality, exception handling, and race conditions</p>
+                <span class="category-count">16 Challenges</span>
+            </div>
+            <div class="category-card glass" style="--cat-color: #e34c26">
+                <div class="category-header">
+                    <span class="category-icon">🌐</span>
                     <h3>HTML</h3>
                 </div>
-                <p>Semantic structure, accessibility, forms, tables, SEO, and meta tags debugging</p>
-                <span class="category-count">15 Challenges</span>
+                <p>Unclosed tags, image src attributes, form payloads, DOCTYPEs, and meta viewports</p>
+                <span class="category-count">10 Challenges</span>
             </div>
-            <div class="category-card glass" style="--cat-color: #4ecdc4">
+            <div class="category-card glass" style="--cat-color: #264de4">
                 <div class="category-header">
-                    <span class="category-icon">{ }</span>
+                    <span class="category-icon">🎨</span>
                     <h3>CSS</h3>
                 </div>
-                <p>Flexbox, Grid, animations, responsive design, variables, and visual effects</p>
-                <span class="category-count">15 Challenges</span>
+                <p>Syntax semicolons, flexbox align-items, class dot selectors, z-index, and hex colors</p>
+                <span class="category-count">10 Challenges</span>
             </div>
-            <div class="category-card glass" style="--cat-color: #45b7d1">
+            <div class="category-card glass" style="--cat-color: #f7df1e">
                 <div class="category-header">
-                    <span class="category-icon">JS</span>
+                    <span class="category-icon">⚡</span>
                     <h3>JavaScript</h3>
                 </div>
-                <p>DOM manipulation, async/await, promises, events, storage, and APIs</p>
-                <span class="category-count">20 Challenges</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Difficulty Section -->
-    <section class="difficulty section">
-        <div class="section-header">
-            <h2 class="section-title">Difficulty Levels</h2>
-            <div class="section-divider"></div>
-        </div>
-        <div class="difficulty-grid">
-            <div class="difficulty-card glass easy">
-                <div class="diff-badge">Easy</div>
-                <div class="diff-stats">
-                    <span class="diff-count">20</span>
-                    <span class="diff-label">Challenges</span>
-                </div>
-                <div class="diff-points">50 pts each</div>
-                <div class="diff-skills">
-                    <span>HTML Basics</span>
-                    <span>CSS Fundamentals</span>
-                    <span>Simple JS</span>
-                </div>
-            </div>
-            <div class="difficulty-card glass medium">
-                <div class="diff-badge">Medium</div>
-                <div class="diff-stats">
-                    <span class="diff-count">20</span>
-                    <span class="diff-label">Challenges</span>
-                </div>
-                <div class="diff-points">100 pts each</div>
-                <div class="diff-skills">
-                    <span>Advanced CSS</span>
-                    <span>DOM Mastery</span>
-                    <span>Async JS</span>
-                </div>
-            </div>
-            <div class="difficulty-card glass hard">
-                <div class="diff-badge">Hard</div>
-                <div class="diff-stats">
-                    <span class="diff-count">10</span>
-                    <span class="diff-label">Challenges</span>
-                </div>
-                <div class="diff-points">200 pts each</div>
-                <div class="diff-skills">
-                    <span>Complex Logic</span>
-                    <span>Performance</span>
-                    <span>System Design</span>
-                </div>
+                <p>DOM query selectors, const reassignments, strict equality coercion, and async promises</p>
+                <span class="category-count">10 Challenges</span>
             </div>
         </div>
     </section>
@@ -259,10 +234,10 @@
     <section class="cta section">
         <div class="cta-content glass">
             <h2>Ready to Debug?</h2>
-            <p>Join the Crisis Lab Debug Arena and prove your frontend skills. The bugs are waiting.</p>
+            <p>Join the Crisis Lab Debug Arena and prove your debugging skills across Python, C, Java, Web (HTML/CSS), and JavaScript with 76 challenges and a 1,000-Point Master Boss.</p>
             <div class="cta-actions">
-                <a href="rules.html" class="btn btn-primary glow pulse">Enter Arena</a>
-                <a href="login.html" class="btn btn-secondary">Register Now</a>
+                <a href="login.html" class="btn btn-primary glow pulse">Enter Arena</a>
+                <a href="rules.html" class="btn btn-secondary">Competition Rules</a>
             </div>
         </div>
     </section>
@@ -283,7 +258,7 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="footer-copyright">
-                <p>&copy; 2025 Crisis Laboratory Debug Arena. For educational purposes.</p>
+                <p>&copy; 2026 Crisis Laboratory Debug Arena. For educational purposes.</p>
             </div>
         </div>
     </footer>
@@ -292,6 +267,8 @@
     <script src="assets/js/particles.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
+    <script src="assets/js/timer.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
 </html>

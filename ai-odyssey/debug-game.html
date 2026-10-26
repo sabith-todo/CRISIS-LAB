@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CRISIS LAB Debug Game — Find the one wrong word in code. Operators, functions, keywords across Python, C and Java.">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>Debug Game | CRISIS LAB</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    <link rel="stylesheet" href="assets/css/cyberpunk.css">
+    <style>
+        /* ── Debug Game Page Styles ─────────────────────────────── */
+        .debug-game-page {
+            min-height: 100vh;
+            padding-top: var(--nav-height);
+            padding-bottom: 60px;
+        }
+
+        /* ── Welcome / Select Screen ────────────────────────── */
+        .dg-welcome {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 20px 0;
+            text-align: center;
+        }
+        .dg-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,240,255,0.08);
+            border: 1px solid rgba(0,240,255,0.25);
+            border-radius: 50px;
+            padding: 8px 22px;
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+        .dg-title {
+            font-size: clamp(2rem, 6vw, 3.8rem);
+            font-weight: 900;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--neon-blue) 50%, var(--neon-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+        .dg-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        /* Info strip */
+        .dg-info-strip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .dg-info-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: .8rem;
+            color: var(--text-secondary);
+        }
+        .dg-info-pill .pi { color: var(--neon-blue); font-size: 1rem; }
+
+        /* Difficulty selector grid */
+        .dg-diff-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 50px;
+        }
+        .dg-diff-btn {
+            position: relative;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px 20px;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            color: var(--text-primary);
+            transition: all .3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .dg-diff-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .dg-diff-btn.easy::before   { background: radial-gradient(circle at top,rgba(0,255,136,.12) 0%,transparent 70%); }
+        .dg-diff-btn.medium::before { background: radial-gradient(circle at top,rgba(255,215,0,.12) 0%,transparent 70%); }
+        .dg-diff-btn.hard::before   { background: radial-gradient(circle at top,rgba(255,68,68,.12) 0%,transparent 70%); }
+        .dg-diff-btn:hover { transform: translateY(-4px); }
+        .dg-diff-btn:hover::before { opacity: 1; }
+        .dg-diff-btn.easy:hover   { border-color: var(--neon-green); box-shadow: 0 8px 30px rgba(0,255,136,.2); }
+        .dg-diff-btn.medium:hover { border-color: var(--neon-yellow); box-shadow: 0 8px 30px rgba(255,215,0,.2); }
+        .dg-diff-btn.hard:hover   { border-color: var(--neon-red); box-shadow: 0 8px 30px rgba(255,68,68,.2); }
+
+        .dg-diff-icon   { font-size: 2.2rem; }
+        .dg-diff-name   { font-size: 1.2rem; font-weight: 800; letter-spacing: .5px; }
+        .dg-diff-pts    { font-size: .8rem; font-weight: 700; padding: 3px 12px; border-radius: 50px; }
+        .dg-diff-btn.easy   .dg-diff-pts { background: rgba(0,255,136,.15); color: var(--neon-green); }
+        .dg-diff-btn.medium .dg-diff-pts { background: rgba(255,215,0,.15); color: var(--neon-yellow); }
+        .dg-diff-btn.hard   .dg-diff-pts { background: rgba(255,68,68,.15); color: var(--neon-red); }
+        .dg-diff-desc   { font-size: .8rem; color: var(--text-muted); text-align: center; line-height: 1.5; }
+        .dg-diff-time   { font-size: .75rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* ── Game Screen ───────────────────────────────────── */
+        .dg-game { max-width: 880px; margin: 0 auto; padding: 30px 20px 60px; display: none; }
+        .dg-game.active { display: block; }
+        .dg-welcome-wrap { display: block; }
+        .dg-welcome-wrap.hidden { display: none; }
+
+        /* Challenge header row */
+        .dg-ch-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .dg-ch-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .dg-tag {
+            font-size: .72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.2px; padding: 4px 14px; border-radius: 50px;
+        }
+        .dg-tag.easy   { background: rgba(0,255,136,.15); color: var(--neon-green); border: 1px solid rgba(0,255,136,.3); }
+        .dg-tag.medium { background: rgba(255,215,0,.15); color: var(--neon-yellow); border: 1px solid rgba(255,215,0,.3); }
+        .dg-tag.hard   { background: rgba(255,68,68,.15); color: var(--neon-red); border: 1px solid rgba(255,68,68,.3); }
+        .dg-tag.lang   { background: rgba(123,47,247,.12); color: var(--neon-purple); border: 1px solid rgba(123,47,247,.3); font-family: var(--font-mono); }
+        .dg-ch-num     { font-size: .85rem; color: var(--text-muted); }
+
+        /* Score mini-bar */
+        .dg-scorebar {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .dg-score-item { text-align: center; }
+        .dg-score-val  { font-size: 1.2rem; font-weight: 800; color: var(--neon-blue); display: block; }
+        .dg-score-lbl  { font-size: .65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+
+        /* Global timer banner — shown when game is running */
+        .dg-global-timer-banner {
+            background: rgba(0,240,255,.06);
+            border: 1px solid rgba(0,240,255,.2);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .dg-gtb-left { display: flex; align-items: center; gap: 10px; }
+        .dg-gtb-label { font-size: .85rem; color: var(--text-secondary); }
+        .dg-gtb-time  {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+            min-width: 80px;
+            text-align: center;
+        }
+        .dg-gtb-time.warn   { color: var(--neon-yellow); }
+        .dg-gtb-time.danger { color: var(--neon-red); animation: pulse-danger .6s ease infinite alternate; }
+        @keyframes pulse-danger { from { opacity: 1; } to { opacity: .5; } }
+        .dg-gtb-streak { font-size: .9rem; color: var(--neon-yellow); font-weight: 700; }
+
+        /* Per-challenge timer ring */
+        .dg-ch-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dg-timer-ring {
+            position: relative;
+            width: 58px; height: 58px;
+            flex-shrink: 0;
+        }
+        .dg-timer-svg {
+            width: 100%; height: 100%;
+            transform: rotate(-90deg);
+        }
+        .dg-timer-track { fill: none; stroke: rgba(255,255,255,.06); stroke-width: 4; }
+        .dg-timer-bar   {
+            fill: none;
+            stroke: var(--neon-blue);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 157;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear, stroke .4s;
+        }
+        .dg-timer-bar.warn   { stroke: var(--neon-yellow); }
+        .dg-timer-bar.danger { stroke: var(--neon-red); }
+        .dg-timer-num {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono);
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Description box */
+        .dg-desc {
+            background: rgba(0,240,255,.04);
+            border: 1px solid rgba(0,240,255,.12);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            font-size: .92rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
+        .dg-desc strong { color: var(--neon-blue); }
+
+        /* Code block */
+        .dg-code-wrap {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.5);
+        }
+        .dg-code-hdr {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: #161b22;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+        .dg-code-dots { display: flex; gap: 6px; }
+        .dg-code-dots span { width: 12px; height: 12px; border-radius: 50%; }
+        .dg-code-dots span:nth-child(1) { background: #ff5f57; }
+        .dg-code-dots span:nth-child(2) { background: #febc2e; }
+        .dg-code-dots span:nth-child(3) { background: #28c840; }
+        .dg-code-lang-label {
+            flex: 1; text-align: center;
+            font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted);
+        }
+        .dg-copy-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 1rem; opacity: .5; transition: opacity .2s;
+        }
+        .dg-copy-btn:hover { opacity: 1; }
+        .dg-code-pre {
+            font-family: var(--font-mono);
+            font-size: .88rem;
+            line-height: 1.75;
+            color: #cdd9e5;
+            padding: 22px 24px;
+            overflow-x: auto;
+            white-space: pre;
+            counter-reset: line;
+        }
+        /* Syntax token colours */
+        .tok-kw  { color: #ff7b72; }
+        .tok-fn  { color: #d2a8ff; }
+        .tok-str { color: #a5d6ff; }
+        .tok-num { color: #79c0ff; }
+        .tok-cmt { color: #8b949e; font-style: italic; }
+        .tok-op  { color: #ff7b72; }
+        .tok-bug { color: #ff4444; background: rgba(255,68,68,.1); border-radius: 3px; padding: 0 2px; text-decoration: underline wavy #ff4444; }
+
+        /* Answer area */
+        .dg-answer-box {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+        .dg-answer-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: .9rem;
+            color: var(--text-secondary);
+        }
+        .dg-pts-pill {
+            font-size: .78rem; font-weight: 700;
+            color: var(--neon-green);
+            background: rgba(0,255,136,.1);
+            border: 1px solid rgba(0,255,136,.25);
+            padding: 3px 10px; border-radius: 50px;
+        }
+        .dg-input-row { display: flex; gap: 10px; margin-bottom: 14px; }
+        .dg-answer-input {
+            flex: 1;
+            background: rgba(0,0,0,.4);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 13px 18px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            caret-color: var(--neon-blue);
+        }
+        .dg-answer-input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(0,240,255,.1);
+        }
+        .dg-answer-input.correct {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 0 3px rgba(0,255,136,.15);
+        }
+        .dg-answer-input.wrong {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 0 3px rgba(255,68,68,.15);
+            animation: dg-shake .4s ease;
+        }
+        @keyframes dg-shake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        .dg-submit-btn {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--neon-blue);
+            color: #0a0a1a;
+            border: none; border-radius: var(--radius-sm);
+            padding: 13px 24px;
+            font-family: var(--font-sans); font-size: .92rem; font-weight: 800;
+            cursor: pointer; white-space: nowrap;
+            transition: all .2s;
+        }
+        .dg-submit-btn:hover {
+            background: #33f4ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 18px rgba(0,240,255,.35);
+        }
+        .dg-submit-btn:active { transform: none; }
+        .dg-submit-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Hints */
+        .dg-hints-row {
+            border-top: 1px solid rgba(255,255,255,.06);
+            padding-top: 14px;
+        }
+        .dg-hints-header {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 10px;
+            font-size: .82rem; color: var(--text-muted);
+        }
+        .dg-hints-cost { color: var(--neon-red); font-size: .78rem; }
+        .dg-hints-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .dg-hint-item {
+            background: rgba(255,215,0,.06);
+            border: 1px solid rgba(255,215,0,.2);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: .86rem; color: var(--text-secondary);
+            animation: fadeSlideUp .3s ease;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .dg-hint-btn {
+            background: none;
+            border: 1px dashed rgba(255,215,0,.3);
+            border-radius: var(--radius-sm);
+            padding: 8px 16px;
+            font-family: var(--font-sans); font-size: .82rem; color: var(--neon-yellow);
+            cursor: pointer; transition: all .2s;
+        }
+        .dg-hint-btn:hover  { background: rgba(255,215,0,.08); border-style: solid; }
+        .dg-hint-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+        /* Nav buttons */
+        .dg-nav-row {
+            display: flex; justify-content: center; gap: 12px; margin-top: 10px;
+        }
+        .dg-nav-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 9px 20px;
+            font-family: var(--font-sans); font-size: .88rem; color: var(--text-secondary);
+            cursor: pointer; transition: all .2s;
+        }
+        .dg-nav-btn:hover { border-color: var(--neon-blue); color: var(--text-primary); }
+
+        /* ── Result Panel ─────────────────────────────────── */
+        .dg-result {
+            max-width: 560px; margin: 60px auto;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            text-align: center;
+            display: none;
+        }
+        .dg-result.active { display: block; }
+        .dg-result-icon  { font-size: 4rem; animation: popIn .4s cubic-bezier(.36,2,.5,1); margin-bottom: 12px; }
+        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .dg-result-title { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
+        .dg-result-title.ok  { color: var(--neon-green); }
+        .dg-result-title.bad { color: var(--neon-red); }
+        .dg-result-sub  { font-size: .95rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+        .dg-result-stats {
+            display: flex; gap: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
+        .dg-rs {
+            flex: 1; padding: 16px 10px; text-align: center;
+            border-right: 1px solid var(--border-color);
+        }
+        .dg-rs:last-child { border-right: none; }
+        .dg-rs-val { font-size: 1.4rem; font-weight: 800; display: block; }
+        .dg-rs-val.g { color: var(--neon-green); }
+        .dg-rs-val.y { color: var(--neon-yellow); }
+        .dg-rs-lbl { font-size: .65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .dg-explain {
+            background: rgba(123,47,247,.07);
+            border: 1px solid rgba(123,47,247,.2);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: .88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 24px;
+        }
+        .dg-explain strong { color: var(--neon-blue); }
+        .dg-result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .dg-btn-primary {
+            background: var(--neon-blue); color: #0a0a1a;
+            border: none; border-radius: var(--radius-sm);
+            padding: 11px 26px; font-family: var(--font-sans); font-size: .92rem; font-weight: 800;
+            cursor: pointer; transition: all .2s;
+        }
+        .dg-btn-primary:hover { background: #33f4ff; transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .dg-btn-secondary {
+            background: var(--bg-glass); color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 11px 22px; font-family: var(--font-sans); font-size: .92rem;
+            cursor: pointer; transition: all .2s;
+        }
+        .dg-btn-secondary:hover { border-color: var(--neon-blue); color: var(--text-primary); }
+
+        /* ── Start Banner ─────────────────────────────────── */
+        .dg-start-banner {
+            text-align: center;
+            background: rgba(0,240,255,.04);
+            border: 1px dashed rgba(0,240,255,.25);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 30px;
+        }
+        .dg-start-banner p { font-size: .95rem; color: var(--text-secondary); margin-bottom: 20px; }
+        .dg-start-now-btn {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none; border-radius: var(--radius-md);
+            padding: 15px 40px;
+            font-family: var(--font-sans); font-size: 1.05rem; font-weight: 800;
+            color: #fff; cursor: pointer; transition: all .3s;
+            box-shadow: 0 4px 20px rgba(0,240,255,.25);
+        }
+        .dg-start-now-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,240,255,.4); }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .dg-diff-grid { grid-template-columns: 1fr; }
+            .dg-input-row { flex-direction: column; }
+            .dg-ch-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background (existing site pattern) -->
+    <div class="cyber-bg">
+        <div class="grid-overlay"></div>
+        <div class="scan-line"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Navigation (same as existing site) -->
+    <nav class="navbar glass" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⌘</span>
+                <span class="brand-text">CRISIS LAB</span>
+                <span class="brand-sub">DEBUG THE ARENA</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="debug-game.html" class="nav-link active">Debug Game</a>
+                <a href="rules.html" class="nav-link">Rules</a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="scoreboard.html" class="nav-link">Scoreboard</a>
+            </div>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="toggle-icon">🌙</span>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="debug-game-page">
+
+        <!-- ══ WELCOME SCREEN ══════════════════════════════ -->
+        <div class="dg-welcome-wrap" id="dgWelcomeWrap">
+            <div class="dg-welcome">
+                <div class="dg-badge">🐛 Single Word Debug Challenge</div>
+                <h1 class="dg-title">Find the Bug</h1>
+                <p class="dg-subtitle">
+                    Code snippets in Python, C &amp; Java. Each one has <strong>exactly one wrong word</strong>
+                    — a typo, wrong operator (<code>+</code>, <code>&lt;</code>), or wrong function name (<code>sum()</code>).
+                    Find it. Type it. Win.
+                </p>
+
+                <div class="dg-info-strip">
+                    <div class="dg-info-pill"><span class="pi">🎯</span> One wrong word per challenge</div>
+                    <div class="dg-info-pill"><span class="pi">💡</span> Up to 3 hints (−5 pts each)</div>
+                    <div class="dg-info-pill"><span class="pi">⏱</span> Per-challenge + overall timer</div>
+                    <div class="dg-info-pill"><span class="pi">🔥</span> Streak multiplier bonus</div>
+                    <div class="dg-info-pill"><span class="pi">🚫</span> No flags — just the word</div>
+                </div>
+
+                <div class="dg-diff-grid">
+                    <button class="dg-diff-btn easy" onclick="DG.selectDifficulty('easy')" id="dgEasyBtn">
+                        <span class="dg-diff-icon">🟢</span>
+                        <span class="dg-diff-name">Easy</span>
+                        <span class="dg-diff-pts">+50 pts</span>
+                        <span class="dg-diff-desc">Typos in keywords &amp; function names</span>
+                        <span class="dg-diff-time">⏱ 90 sec / challenge</span>
+                    </button>
+                    <button class="dg-diff-btn medium" onclick="DG.selectDifficulty('medium')" id="dgMediumBtn">
+                        <span class="dg-diff-icon">🟡</span>
+                        <span class="dg-diff-name">Medium</span>
+                        <span class="dg-diff-pts">+100 pts</span>
+                        <span class="dg-diff-desc">Wrong operators, logic &amp; comparisons</span>
+                        <span class="dg-diff-time">⏱ 60 sec / challenge</span>
+                    </button>
+                    <button class="dg-diff-btn hard" onclick="DG.selectDifficulty('hard')" id="dgHardBtn">
+                        <span class="dg-diff-icon">🔴</span>
+                        <span class="dg-diff-name">Hard</span>
+                        <span class="dg-diff-pts">+200 pts</span>
+                        <span class="dg-diff-desc">Subtle bugs — off-by-one, wrong function</span>
+                        <span class="dg-diff-time">⏱ 45 sec / challenge</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ GAME SCREEN ════════════════════════════════ -->
+        <div class="dg-game" id="dgGame">
+
+            <!-- Start banner (shown before timer begins) -->
+            <div class="dg-start-banner" id="dgStartBanner">
+                <p>You selected <strong id="dgSelectedDiff">Easy</strong> mode. The timer starts the moment you click below.</p>
+                <button class="dg-start-now-btn" id="dgStartNowBtn" onclick="DG.startGame()">
+                    ▶ Start Timer &amp; Begin →
+                </button>
+            </div>
+
+            <!-- Global timer bar (visible once started) -->
+            <div class="dg-global-timer-banner" id="dgGlobalTimerBanner" style="display:none;">
+                <div class="dg-gtb-left">
+                    <span class="dg-gtb-label">⏱ Overall time:</span>
+                    <span class="dg-gtb-time" id="dgGlobalTime">15:00</span>
+                </div>
+                <span class="dg-gtb-streak" id="dgStreakDisplay">🔥 0 streak</span>
+                <div style="display:flex;gap:18px;">
+                    <div class="dg-score-item">
+                        <span class="dg-score-val" id="dgTotalScore">0</span>
+                        <span class="dg-score-lbl">Score</span>
+                    </div>
+                    <div class="dg-score-item">
+                        <span class="dg-score-val" id="dgSolvedCount">0</span>
+                        <span class="dg-score-lbl">Solved</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenge card -->
+            <div id="dgChallengeCard">
+                <!-- Challenge header -->
+                <div class="dg-ch-header">
+                    <div class="dg-ch-meta">
+                        <span class="dg-tag" id="dgDiffTag">Easy</span>
+                        <span class="dg-tag lang" id="dgLangTag">Python</span>
+                        <span class="dg-ch-num" id="dgChNum">Challenge 1 / 8</span>
+                    </div>
+                    <div class="dg-ch-timer">
+                        <div class="dg-timer-ring">
+                            <svg class="dg-timer-svg" viewBox="0 0 58 58">
+                                <circle cx="29" cy="29" r="25" class="dg-timer-track"/>
+                                <circle cx="29" cy="29" r="25" class="dg-timer-bar" id="dgTimerBar"/>
+                            </svg>
+                            <span class="dg-timer-num" id="dgTimerNum">90</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="dg-desc" id="dgDesc"></div>
+
+                <!-- Code block -->
+                <div class="dg-code-wrap">
+                    <div class="dg-code-hdr">
+                        <div class="dg-code-dots"><span></span><span></span><span></span></div>
+                        <span class="dg-code-lang-label" id="dgCodeLang">python</span>
+                        <button class="dg-copy-btn" onclick="DG.copyCode()" title="Copy">📋</button>
+                    </div>
+                    <pre class="dg-code-pre" id="dgCodePre"></pre>
+                </div>
+
+                <!-- Answer -->
+                <div class="dg-answer-box">
+                    <div class="dg-answer-label">
+                        <span>🔍 What is the <strong style="color:var(--neon-blue)">one wrong word</strong>?</span>
+                        <span class="dg-pts-pill" id="dgPtsPill">+50 pts</span>
+                    </div>
+                    <div class="dg-input-row">
+                        <input
+                            type="text"
+                            class="dg-answer-input"
+                            id="dgAnswerInput"
+                            placeholder="Type the wrong word / operator..."
+                            autocomplete="off"
+                            autocorrect="off"
+                            spellcheck="false"
+                            onkeydown="DG.onEnter(event)"
+                        />
+                        <button class="dg-submit-btn" id="dgSubmitBtn" onclick="DG.checkAnswer()">
+                            Submit <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Hints -->
+                    <div class="dg-hints-row">
+                        <div class="dg-hints-header">
+                            <span>💡 Hints</span>
+                            <span class="dg-hints-cost">(−5 pts each)</span>
+                        </div>
+                        <div class="dg-hints-list" id="dgHintsList"></div>
+                        <button class="dg-hint-btn" id="dgHintBtn" onclick="DG.useHint()">
+                            Reveal hint (<span id="dgHintsLeft">3</span> left)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Nav -->
+                <div class="dg-nav-row">
+                    <button class="dg-nav-btn" onclick="DG.skipChallenge()">⏭ Skip</button>
+                    <button class="dg-nav-btn" onclick="DG.goHome()">🏠 Choose Difficulty</button>
+                    <button class="dg-nav-btn" onclick="window.location.href='dashboard.html'">📊 Dashboard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ RESULT PANEL ═══════════════════════════════ -->
+        <div class="dg-result" id="dgResult">
+            <div class="dg-result-icon" id="dgResultIcon">✅</div>
+            <div class="dg-result-title" id="dgResultTitle">Correct!</div>
+            <div class="dg-result-sub"  id="dgResultSub"></div>
+            <div class="dg-result-stats">
+                <div class="dg-rs">
+                    <span class="dg-rs-val g" id="dgRsPts">+50</span>
+                    <span class="dg-rs-lbl">Points</span>
+                </div>
+                <div class="dg-rs">
+                    <span class="dg-rs-val" id="dgRsTotal">50</span>
+                    <span class="dg-rs-lbl">Total</span>
+                </div>
+                <div class="dg-rs">
+                    <span class="dg-rs-val y" id="dgRsStreak">🔥 1</span>
+                    <span class="dg-rs-lbl">Streak</span>
+                </div>
+            </div>
+            <div class="dg-explain" id="dgExplain"></div>
+            <div class="dg-result-actions">
+                <button class="dg-btn-primary"   onclick="DG.nextChallenge()">Next Challenge →</button>
+                <button class="dg-btn-secondary" onclick="DG.goHome()">🏠 Change Difficulty</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast container (re-use existing site pattern) -->
+    <div id="dgToastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
+
+    <!-- Existing site JS (theme, particles, nav) -->
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/particles.js"></script>
+    <script src="assets/js/navigation.js"></script>
+    <!-- Debug Game Logic -->
+    <script src="assets/js/debug-challenges.js"></script>
+    <script src="assets/js/debug-game.js"></script>
+</body>
+</html>

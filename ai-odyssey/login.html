@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CRISIS LAB | Debug the Arena</title>
+    <title>Team Login - CRISIS LAB | Debug the Arena</title>
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/animations.css">
     <link rel="stylesheet" href="assets/css/cyberpunk.css">
@@ -30,9 +30,9 @@
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="scoreboard.html" class="nav-link">Scoreboard</a>
             </div>
-            <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="toggle-icon">🌙</span>
+            <div class="nav-controls" id="navControls">
+                <button class="theme-toggle btn-icon" id="themeToggle" title="Toggle Theme" aria-label="Toggle Theme">
+                    <span class="theme-icon">☀️</span>
                 </button>
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
@@ -42,66 +42,94 @@
     </nav>
 
     <div class="login-page">
-        <div class="login-container">
+        <div class="login-container" style="max-width: 480px;">
             <div class="login-card glass">
                 <div class="login-header">
-                    <span class="brand-icon">⌘</span>
-                    <h1>Enter the Arena</h1>
-                    <p>Sign in to start debugging</p>
+                    <span class="brand-icon">👥</span>
+                    <h1>Team Arena Access</h1>
+                    <p>Enter your team credentials to access the arena</p>
                 </div>
 
-<div class="login-tabs">
+                <div class="login-tabs">
                     <button class="login-tab active" data-tab="login">Sign In</button>
-                    <button class="login-tab" data-tab="register">Register</button>
+                    <button class="login-tab" data-tab="register">Register Team</button>
                 </div>
 
+                <!-- SIGN IN FORM (Team Name, Member Username, Password) -->
                 <form class="login-form" id="loginForm">
                     <div class="form-group">
-                        <label class="form-label" for="loginUsername">Username</label>
-                        <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username" required autocomplete="username">
+                        <label class="form-label" for="loginTeamName">Team Name</label>
+                        <input type="text" id="loginTeamName" class="form-input" placeholder="" autocomplete="organization">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+                        <label class="form-label" for="loginUsername">Member Username <span style="color:var(--accent-primary);">*</span></label>
+                        <input type="text" id="loginUsername" class="form-input" placeholder="" required autocomplete="username">
                     </div>
 
-                    <button type="submit" class="btn btn-primary glow">
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Team Password <span style="color:var(--accent-primary);">*</span></label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary glow" style="width: 100%; margin-top: 1rem;">
                         <span>🚀 Enter Arena</span>
                     </button>
                 </form>
 
+                <!-- REGISTER TEAM FORM (1, 2, or 3 Members) -->
                 <form class="login-form" id="registerForm" style="display:none;">
                     <div class="form-group">
-                        <label class="form-label" for="registerUsername">Username</label>
-                        <input type="text" id="registerUsername" class="form-input" placeholder="Choose a username" required>
+                        <label class="form-label" for="registerTeamName">Team Name <span style="color:var(--accent-primary);">*</span></label>
+                        <input type="text" id="registerTeamName" class="form-input" placeholder="" required>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label" for="registerTeamName">Team Name</label>
-                        <input type="text" id="registerTeamName" class="form-input" placeholder="Enter your team name" required>
+                        <label class="form-label" for="registerPassword">Team Password <span style="color:var(--accent-primary);">*</span></label>
+                        <input type="password" id="registerPassword" class="form-input" placeholder="" required>
                     </div>
+
+                    <div style="margin: 1.25rem 0 0.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color);">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: var(--accent-primary);">👥 Team Members (1 to 3 Members)</span>
+                    </div>
+
                     <div class="form-group">
-                        <label class="form-label" for="registerPassword">Password</label>
-                        <input type="password" id="registerPassword" class="form-input" placeholder="Choose a password" required>
+                        <label class="form-label" for="registerMember1">Member 1 (Team Leader) <span style="color:var(--accent-primary);">*</span></label>
+                        <input type="text" id="registerMember1" class="form-input" placeholder="" required>
                     </div>
-                    <button type="submit" class="btn btn-secondary">
-                        <span>➕ Register Team</span>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerMember2">Member 2 <span style="color:var(--text-muted); font-size:0.8rem;">(Optional)</span></label>
+                        <input type="text" id="registerMember2" class="form-input" placeholder="">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerMember3">Member 3 <span style="color:var(--text-muted); font-size:0.8rem;">(Optional)</span></label>
+                        <input type="text" id="registerMember3" class="form-input" placeholder="">
+                    </div>
+
+                    <div style="background: rgba(255, 149, 0, 0.1); border: 1px solid var(--accent-warning); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.82rem; color: var(--accent-warning); line-height: 1.4;">
+                        🛡️ <strong>Admin Approval Required:</strong> All newly registered teams will be placed in <em>Pending Approval</em> status. You will be able to enter the arena as soon as the competition administrator approves your team.
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,45,85,0.2)); border-color: var(--accent-warning);">
+                        <span>➕ Register Team (Pending Approval)</span>
                     </button>
                 </form>
             </div>
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="assets/js/supabase-config.js"></script>
     <script src="assets/js/supabase-client.js"></script>
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/particles.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/animations.js"></script>
+    <script src="assets/js/teams-data.js"></script>
     <script src="assets/js/challenges.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/login-supabase.js"></script>
 </body>
 </html>
-

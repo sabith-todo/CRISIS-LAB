@@ -1,1 +1,1 @@
-AIODYSSEY{regex_fixed}
+return (a.id == b.id && a.timestamp == b.timestamp);

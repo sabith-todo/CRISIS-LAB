@@ -1,1 +1,1 @@
-AIODYSSEY{portal_fixed}
+return new String(sub.toCharArray());

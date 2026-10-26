@@ -1,1 +1,1 @@
-AIODYSSEY{canvas_fixed}
+close(sock); return -1;

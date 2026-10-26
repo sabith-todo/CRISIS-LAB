@@ -1,1 +1,1 @@
-AIODYSSEY{image_fixed}
+latencies = list(parse_log_latencies(stream))

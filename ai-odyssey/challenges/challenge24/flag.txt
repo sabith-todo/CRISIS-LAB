@@ -1,1 +1,1 @@
-AIODYSSEY{weather_fixed}
+const uint8_t* b = (const uint8_t*)bytes;
