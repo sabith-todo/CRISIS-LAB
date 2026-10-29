@@ -1,4 +1,4 @@
- # ⚔️ CRISIS-LABORATORY
+# ⚔️ CRISIS-LABORATORY
 
 ### Interactive Debugging Arena | Sree Sakthi Engineering College
 
