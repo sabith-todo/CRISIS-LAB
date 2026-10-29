@@ -111,7 +111,7 @@ npm start
 
 If your project uses a different startup command, use the command defined in its configuration.
 
-## 🎯 Project Objectives
+## 🎯 Project Objectives 
 
 - Improve students' programming and debugging skills.
 - Encourage logical thinking and systematic problem-solving.
