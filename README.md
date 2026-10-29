@@ -74,7 +74,7 @@ Based on the current GitHub repository language statistics:
 ## 🚀 Getting Started
 
 ### Prerequisites
-
+ 
 Install the following tools before running the project:
 
 - [Node.js](https://nodejs.org/)
