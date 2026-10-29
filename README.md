@@ -87,7 +87,7 @@ Install the following tools before running the project:
 
 ```bash
 git clone https://github.com/sabith-todo/CRISIS-LAB.git
-```
+````
 
 **2. Enter the project directory**
 
