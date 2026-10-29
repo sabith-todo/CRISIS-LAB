@@ -66,7 +66,7 @@ Based on the current GitHub repository language statistics:
 
 ## 🎓 Event Information
 
-- **Project:** CRISIS-LABORATORY
+- **Project:**  CRISIS-LABORATORY
 - **Event Type:** Debugging Arena
 - **Institution:** Sree Sakthi Engineering College
 - **Location:** Coimbatore, Tamil Nadu, India
