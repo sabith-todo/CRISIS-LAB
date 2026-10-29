@@ -50,7 +50,7 @@ This system encourages participants to demonstrate their debugging skills before
 ### Frontend
 - **HTML5** — Web page structure
 - **CSS3** — Styling and user interface design
-- **JavaScript** — Interactive functionality and client-side logic
+- **JavaScript** — Interactive functionality and client-side logic 
 
 ### Backend
 - **Node.js** — JavaScript runtime for server-side development
