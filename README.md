@@ -81,7 +81,7 @@ Install the following tools before running the project:
 - npm, included with Node.js
 - A web browser
 
-### Installation
+### Installation 
 
 **1. Clone the repository**
 
