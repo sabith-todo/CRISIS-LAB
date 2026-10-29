@@ -89,7 +89,7 @@ Install the following tools before running the project:
 git clone https://github.com/sabith-todo/CRISIS-LAB.git
 ````
 
-**2. Enter the project directory**
+**2. Enter the project directory** 
 
 ```bash
 cd CRISIS-LAB
