@@ -101,7 +101,7 @@ cd CRISIS-LAB
 npm install
 ```
 
-**4. Start the application**
+**4. Start the application** 
 
 Check your `package.json` for the available scripts. If a `start` script exists, run:
 
