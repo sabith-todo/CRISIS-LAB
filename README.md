@@ -119,7 +119,7 @@ If your project uses a different startup command, use the command defined in its
 - Introduce progressive difficulty and achievement-based challenges.
 - Motivate participants to develop confidence in identifying and fixing code errors.
 
-## 🔮 Future Enhancements
+## 🔮 Future Enhancements 
 
 Potential improvements for the arena include:
 
