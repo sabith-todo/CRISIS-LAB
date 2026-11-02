@@ -29,7 +29,7 @@ The arena encourages students to improve their programming fundamentals, debuggi
 
 CRISIS-LABORATORY includes a conditional Boss Challenge designed to reward participants for progressing through the initial levels.
 
-- **Easy + Medium:** Participants must satisfy the combined 50% progression requirement.
+- **Easy + Medium:** Participants must satisfy the combined 50% progression requirement. 
 - **Boss Unlocked:** The Boss Challenge becomes available when the required condition is met.
 - **Boss Locked:** If the condition is not satisfied, the Boss Challenge remains unavailable.
 
