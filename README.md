@@ -17,7 +17,7 @@ CRISIS-LABORATORY provides an interactive environment where participants solve p
 The arena encourages students to improve their programming fundamentals, debugging techniques, analytical thinking, and confidence in solving coding problems.
 
 ## 🎮 Challenge Levels
-
+ 
 | Level | Description |
 |---|---|
 | 🟢 **Easy** | Basic debugging challenges for testing programming fundamentals. |
