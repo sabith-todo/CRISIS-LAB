@@ -10,7 +10,7 @@ The objective is simple: identify the bug, understand the problem, fix the code,
 
 ---
 
-## 🎯 About the Project
+## 🎯 About the Project 
 
 CRISIS-LABORATORY provides an interactive environment where participants solve programming errors across different difficulty levels.
 
