@@ -8,7 +8,7 @@ Conducted at **Sree Sakthi Engineering College, Coimbatore**, this project trans
 
 The objective is simple: identify the bug, understand the problem, fix the code, and conquer the challenge.
 
----
+--- 
 
 ## 🎯 About the Project
 
