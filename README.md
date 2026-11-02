@@ -60,7 +60,7 @@ This system encourages participants to demonstrate their debugging skills before
 
 Based on the current GitHub repository language statistics:
 
-- [**HTML**](https://github.com/sabith-todo/CRISIS-LAB/search?l=html) — 58.8%
+- [**HTML**](https://github.com/sabith-todo/CRISIS-LAB/search?l=html) — 58.9%
 - [**JavaScript**](https://github.com/sabith-todo/CRISIS-LAB/search?l=javascript) — 35.6%
 - [**CSS**](https://github.com/sabith-todo/CRISIS-LAB/search?l=css) — 5.6%
 
