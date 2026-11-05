@@ -21,7 +21,7 @@ The arena encourages students to improve their programming fundamentals, debuggi
 | Level | Description |
 |---|---|
 | 🟢 **Easy** | Basic debugging challenges for testing programming fundamentals. |
-| 🟡 **Medium** | Intermediate problems requiring logical thinking and code analysis. |
+| 🟡 **Medium** | Intermediate problems requiring logical thinking and code analysis. | 
 | 🔴 **Hard** | Advanced debugging tasks that challenge problem-solving abilities. |
 | 👑 **Boss** | A special challenge unlocked when the required Easy + Medium progression condition is satisfied. |
 
