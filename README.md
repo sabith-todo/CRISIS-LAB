@@ -31,7 +31,7 @@ CRISIS-LABORATORY includes a conditional Boss Challenge designed to reward parti
 
 - **Easy + Medium:** Participants must satisfy the combined 50% progression requirement. 
 - **Boss Unlocked:** The Boss Challenge becomes available when the required condition is met.
-- **Boss Locked:** If the condition is not satisfied, the Boss Challenge remains unavailable.
+- **Boss Locked:** If the condition is not satisfied, the Boss Challenge remains unavailable. 
 
 This system encourages participants to demonstrate their debugging skills before advancing to the special challenge.
 
