@@ -35,7 +35,7 @@ CRISIS-LABORATORY includes a conditional Boss Challenge designed to reward parti
 
 This system encourages participants to demonstrate their debugging skills before advancing to the special challenge.
 
-## ✨ Key Features
+## ✨ Key Features 
 
 - 🧩 Multiple difficulty levels: Easy, Medium, Hard, and Boss
 - 🔓 Conditional Boss Challenge unlocking
