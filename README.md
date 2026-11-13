@@ -1,7 +1,7 @@
 # ⚔️ CRISIS-LABORATORY
  
 ### Interactive Debugging Arena | Sree Sakthi Engineering College
- 
+  
 **CRISIS-LABORATORY** is a programming debugging arena designed to test students' coding knowledge, logical thinking, and problem-solving skills through progressively challenging debugging tasks.
 
 Conducted at **Sree Sakthi Engineering College, Coimbatore**, this project transforms traditional debugging practice into an engaging technical challenge featuring multiple difficulty levels and a special Boss Challenge unlock mechanism.
