@@ -25,7 +25,7 @@ The arena encourages students to improve their programming fundamentals, debuggi
 | 🔴 **Hard** | Advanced debugging tasks that challenge problem-solving abilities. |
 | 👑 **Boss** | A special challenge unlocked when the required Easy + Medium progression condition is satisfied. |
 
-## 👑 Boss Challenge Unlock System
+## 👑 Boss Challenge Unlock System :
 
 CRISIS-LABORATORY includes a conditional Boss Challenge designed to reward participants for progressing through the initial levels.
 
@@ -35,7 +35,7 @@ CRISIS-LABORATORY includes a conditional Boss Challenge designed to reward parti
 
 This system encourages participants to demonstrate their debugging skills before advancing to the special challenge.
 
-## ✨ Key Features 
+## ✨ Key Features :
 
 - 🧩 Multiple difficulty levels: Easy, Medium, Hard, and Boss
 - 🔓 Conditional Boss Challenge unlocking
@@ -45,7 +45,7 @@ This system encourages participants to demonstrate their debugging skills before
 - 🎯 Technical skill development through hands-on challenges
 - 🏆 Competitive learning experience for college students
 
-## 🛠️ Technologies Used
+## 🛠️ Technologies Used :
 
 ### Frontend
 - **HTML5** — Web page structure
@@ -56,7 +56,7 @@ This system encourages participants to demonstrate their debugging skills before
 - **Node.js** — JavaScript runtime for server-side development
 - **Express.js** — Backend framework for handling routes and HTTP requests
 
-## 💻 Languages
+## 💻 Languages :
 
 Based on the current GitHub repository language statistics:
 
@@ -64,14 +64,14 @@ Based on the current GitHub repository language statistics:
 - [**JavaScript**](https://github.com/sabith-todo/CRISIS-LAB/search?l=javascript) — 35.6%
 - [**CSS**](https://github.com/sabith-todo/CRISIS-LAB/search?l=css) — 5.6%
 
-## 🎓 Event Information
+## 🎓 Event Information :
 
 - **Project:**  CRISIS-LABORATORY
 - **Event Type:** Debugging Arena
 - **Institution:** Sree Sakthi Engineering College
 - **Location:** Coimbatore, Tamil Nadu, India
 
-## 🚀 Getting Started
+## 🚀 Getting Started :
 
 ### Prerequisites
  
@@ -111,7 +111,7 @@ npm start
 
 If your project uses a different startup command, use the command defined in its configuration.
 
-## 🎯 Project Objectives 
+## 🎯 Project Objectives :
 
 - Improve students' programming and debugging skills.
 - Encourage logical thinking and systematic problem-solving.
@@ -119,7 +119,7 @@ If your project uses a different startup command, use the command defined in its
 - Introduce progressive difficulty and achievement-based challenges.
 - Motivate participants to develop confidence in identifying and fixing code errors.
 
-## 🔮 Future Enhancements 
+## 🔮 Future Enhancements :
 
 Potential improvements for the arena include:
 
@@ -130,13 +130,13 @@ Potential improvements for the arena include:
 - Detailed explanations for solved challenges
 - Event analytics and performance reports
 
-## 👨‍💻 Developer
+## 👨‍💻 Developer :
 
 **Sabith**  
 B.Tech Information Technology  
 Sree Sakthi Engineering College
 
-## 📌 Repository
+## 📌 Repository :
 
 [**CRISIS-LABORATORY — GitHub Repository**](https://github.com/sabith-todo/CRISIS-LAB)
 
