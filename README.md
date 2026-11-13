@@ -4,7 +4,7 @@
   
 **CRISIS-LABORATORY** is a programming debugging arena designed to test students' coding knowledge, logical thinking, and problem-solving  skills through progressively challenging debugging tasks.
  
-Conducted at **Sree Sakthi Engineering College, Coimbatore**, this project transforms traditional debugging practice into an engaging technical challenge featuring multiple difficulty levels and a special Boss Challenge unlock mechanism..
+Conducted at **Sree Sakthi Engineering College, Coimbatore**, this project transforms traditional debugging practice into an engaging technical challenge featuring multiple difficulty levels and a special Boss Challenge unlock mechanism.
 
 The objective is simple: identify the bug, understand the problem, fix the code, and conquer the challenge.  
  
@@ -16,7 +16,7 @@ CRISIS-LABORATORY provides an interactive environment where participants solve p
  
 The arena encourages students to improve their programming fundamentals, debugging techniques, analytical thinking, and confidence in solving coding problems.
 
-## 🎮 Challenge Levels
+## 🎮 Challenge Levels :
  
 | Level | Description | 
 |---|---|
