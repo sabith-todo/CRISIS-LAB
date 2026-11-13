@@ -39,7 +39,7 @@ This system encourages participants to demonstrate their debugging skills before
 
 - 🧩 Multiple difficulty levels: Easy, Medium, Hard, and Boss
 - 🔓 Conditional Boss Challenge unlocking
-- 💻 Interactive programming and debugging experience
+- 💻 Interactive programming and debugging experience 
 - 🧠 Logical reasoning and problem-solving practice
 - 📈 Progressive challenge structure
 - 🎯 Technical skill development through hands-on challenges
