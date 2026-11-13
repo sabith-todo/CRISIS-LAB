@@ -107,7 +107,7 @@ Check your `package.json` for the available scripts. If a `start` script exists,
 
 ```bash
 npm start
-```
+``` 
 
 If your project uses a different startup command, use the command defined in its configuration.
 
